@@ -1,0 +1,20 @@
+name = "passel"
+description = ""
+version = "0.1.0-dev"
+
+authors = ["Tali Auster"]
+maintainers = ["Tali Auster <me@tali.network>"]
+maintainers-logins = ["atalii"]
+licenses = "MPL-2.0"
+website = ""
+tags = []
+
+[build-switches]
+
+"*"."Ada_Version" = "Ada2022"
+
+[[depends-on]]
+ahtml = "~0.1.0-dev"
+
+[[pins]]
+ahtml = { url='https://github.com/atalii/ahtml' }
