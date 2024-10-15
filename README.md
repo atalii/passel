@@ -1,4 +1,4 @@
-# passell
+# passel
 
 A bit of a disorganized, clamoring mess of a static site generator.
 
