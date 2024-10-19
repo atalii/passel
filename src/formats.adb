@@ -32,6 +32,7 @@ package body Formats is
       is
          F : File_Type;
       begin
+         Log.Print (Log.Info, "Writing styles.css");
          Create (F, Out_File, Dir & "/styles.css");
          Put (F, Styles);
          Close (F);
