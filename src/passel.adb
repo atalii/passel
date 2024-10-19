@@ -8,6 +8,7 @@ use  Ada.Text_IO;
 
 with TMK;
 with Formats;
+with Log;
 
 procedure Passel
 is
@@ -93,4 +94,11 @@ begin
       when Convert => Do_Convert
          (Ada.Command_Line.Argument (Action_Requested.Target));
    end case;
+
+exception
+
+   when Formats.Target_Exists =>
+      Log.Print (Log.Error, "Target dir exists.");
+      Ada.Command_Line.Set_Exit_Status (1);
+
 end Passel;
