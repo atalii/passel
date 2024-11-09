@@ -1,0 +1,98 @@
+{
+  "nodes": {
+    "alire-community-index": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1728290080,
+        "narHash": "sha256-eUnXtuU7pj2oSKOZfXHEw4D53ImnDpBcC0FkwwwBTGk=",
+        "owner": "alire-project",
+        "repo": "alire-index",
+        "rev": "094bc572e30cde7dfd589f39e885ad293ec4ab44",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alire-project",
+        "repo": "alire-index",
+        "type": "github"
+      }
+    },
+    "alire-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1727797151,
+        "narHash": "sha256-46PwpF1/ZWJmGU/GPbTMuuFRLxazlfFWuFh4VioDNJs=",
+        "ref": "nix",
+        "rev": "d18367d58f24cd11e316f50540cef30b5823bd6a",
+        "revCount": 1969,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/atalii/alire"
+      },
+      "original": {
+        "ref": "nix",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/atalii/alire"
+      }
+    },
+    "alirenix": {
+      "inputs": {
+        "alire-community-index": "alire-community-index",
+        "alire-src": "alire-src",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1731112684,
+        "narHash": "sha256-t9aOrLvEGE8H/DNz9PoXudWu7ZaM1jplTUE/OHupC6c=",
+        "owner": "atalii",
+        "repo": "alirenix",
+        "rev": "a2324b3c122a99b4bd55ba77e37664bcd3d9ca38",
+        "type": "github"
+      },
+      "original": {
+        "owner": "atalii",
+        "repo": "alirenix",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1727816908,
+        "narHash": "sha256-s+pnpwHJxABMCQBK9k5CTexWZzHSxXFku06cJ3CbWbI=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "682ba0c19b8f6de5347573e1460009559bd23e4f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1731101995,
+        "narHash": "sha256-lKxfDQkBGk20PdOuZqMVAQu6ZgBo6C/Jd5Kww7hMFLg=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "fb6cff2f2245893e56878e6a12322c2e8799558d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "release-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "alirenix": "alirenix",
+        "nixpkgs": "nixpkgs_2"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

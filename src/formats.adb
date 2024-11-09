@@ -24,7 +24,7 @@ package body Formats is
          Log.Print (Log.Info, "Writing file: " & Out_Path);
 
          Create (F, Out_File, Out_Path);
-         Put (F, AHTML.Strings.To_String (P.Doc.To_String));
+         Put (F, AHTML.Strings.SU.To_String (P.Doc.To_String));
          Close (F);
       end Write_Page;
 
