@@ -1,6 +1,6 @@
 {
   inputs.alirenix.url = "github:atalii/alirenix";
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/release-24.05";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/release-24.11";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
   outputs = { self, alirenix, nixpkgs, flake-utils }:
@@ -16,7 +16,7 @@
             version = "0.1.0";
             index = alirenix.packages.x86_64-linux.community-index;
             alire = alirenix.packages.x86_64-linux.alire;
-            depsHash = "sha256-OW/RDzX+76poy6K9LJqcSoTHaDjAbvuBw6K0KCR0BtQ=";
+            depsHash = "sha256-uljt5kgnMzzvT9rSl+vnQnNpKx0YSX9ZAVijV2puP8s=";
           };
 
           test-site = pkgs.callPackage self.lib.buildSite {
@@ -25,6 +25,13 @@
             version = "0.1.0";
           };
         };
+      devShells.default =
+        let pkgs = nixpkgs.legacyPackages.${system};
+	in pkgs.mkShell {
+	  nativeBuildInputs = with pkgs; [
+	    alire gnat14 gnat14Packages.gprbuild
+	  ];
+	};
     }) // {
       lib = {
         buildSite =
