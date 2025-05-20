@@ -34,7 +34,8 @@ package body TMK is
       Start : Natural := X'First;
    begin
       for I in X'Range loop
-         --  TODO: do the unicode thing
+         --  TODO: do the unicode thing; we should be using VSS rather than
+         --  builtin strings.
          Start := I;
          exit when X (I) /= ' ';
       end loop;
@@ -71,9 +72,9 @@ package body TMK is
    is
       Unbounded_Line : constant SU.Unbounded_String :=
          SU.To_Unbounded_String (Line);
-      Par : Block := (T => Paragraph, Text => Unbounded_Line);
+      Par : constant Block := (T => Paragraph, Text => Unbounded_Line);
    begin
-      -- FIXME: literally just one line/par?? hello????
+      --  FIXME: literally just one line/par?? hello????
       P.Block_List.Append (Par);
    end Feed_Paragraph_Line;
 
