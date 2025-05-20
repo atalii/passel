@@ -10,7 +10,11 @@ package body TMK is
       Trimmed_Line : constant String := Eat_Space (Line);
    begin
       if Trimmed_Line'Length = 0 then
-         return;
+         if P.State = In_Par then
+            P.State := Expecting_Block;
+         end if;
+
+	 return;
       end if;
 
       if P.State = Header then
@@ -61,7 +65,7 @@ package body TMK is
    procedure Feed_Header_Line (P : in out Parser; Line : String) is
    begin
       if not Is_Metadata (Line) then
-         P.State := None;
+         P.State := Expecting_Block;
          return;
       else
          P.Parse_Metadata (Line (Line'First + 1 .. Line'Last));
@@ -73,9 +77,25 @@ package body TMK is
       Unbounded_Line : constant SU.Unbounded_String :=
          SU.To_Unbounded_String (Line);
       Par : constant Block := (T => Paragraph, Text => Unbounded_Line);
+
+      procedure Add_Line (E : in out Block) is
+      begin
+         SU.Append (E.Text, " ");
+         SU.Append (E.Text, Unbounded_Line);
+      end Add_Line;
    begin
-      --  FIXME: literally just one line/par?? hello????
-      P.Block_List.Append (Par);
+      case P.State is
+         when Expecting_Block => P.Block_List.Append (Par);
+         when In_Par =>
+            P.Block_List.Update_Element
+               (P.Block_List.Last, Add_Line'Access);
+
+         --  TODO: we have a precond guaranteeing that this
+         --  can't happen. we shouldn't need this branch.
+         when others => null;
+      end case;
+
+      P.State := In_Par;
    end Feed_Paragraph_Line;
 
    procedure Parse_Metadata (P : in out Parser; Line : String)

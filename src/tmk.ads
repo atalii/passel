@@ -41,7 +41,7 @@ package TMK is
 
 private
 
-   type Parser_States is (Header, None);
+   type Parser_States is (Header, Expecting_Block, In_Par);
 
    package Blocks is new Ada.Containers.Vectors
      (Index_Type => Positive, Element_Type => Block);
@@ -55,7 +55,7 @@ private
    procedure Feed_Header_Line (P : in out Parser; Line : String)
       with Pre => P.State = Header;
    procedure Feed_Paragraph_Line (P : in out Parser; Line : String)
-      with Pre => P.State = None;
+      with Pre => P.State = Expecting_Block or P.State = In_Par;
 
    procedure Parse_Metadata (P : in out Parser; Line : String);
 
