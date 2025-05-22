@@ -14,7 +14,7 @@ package body TMK is
             P.State := Expecting_Block;
          end if;
 
-	 return;
+         return;
       end if;
 
       if P.State = Header then
