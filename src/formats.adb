@@ -1,5 +1,14 @@
-with Ada.Text_IO;
 with Ada.Directories;
+
+with VSS.Text_Streams.File_Output;
+use VSS.Text_Streams.File_Output;
+
+with VSS.Text_Streams;
+use VSS.Text_Streams;
+
+with VSS.Strings.Conversions;
+use VSS.Strings.Conversions;
+
 with Log;
 
 package body Formats is
@@ -13,28 +22,33 @@ package body Formats is
 
    procedure Write_Out (W : in out Web; Dir : String)
    is
-      use Ada.Text_IO;
       package Dirs renames Ada.Directories;
 
       procedure Write_Page (P : Page)
       is
          Out_Path : constant String := Dir & "/test.html";
-         F : File_Type;
+         F : File_Output_Text_Stream;
+         Success : Boolean := True;
       begin
          Log.Print (Log.Info, "Writing file: " & Out_Path);
 
-         Create (F, Out_File, Out_Path);
-         Put (F, AHTML.Strings.SU.To_String (P.Doc.To_String));
+         Create (F, To_Virtual_String (Out_Path));
+         Put (F, P.Doc.To_String, Success);
+
+         if not Success then
+            Log.Print (Log.Error, "File IO failed.");
+         end if;
          Close (F);
       end Write_Page;
 
       procedure Write_CSS
       is
-         F : File_Type;
+         F : File_Output_Text_Stream;
+         Success : Boolean := True;
       begin
          Log.Print (Log.Info, "Writing styles.css");
-         Create (F, Out_File, Dir & "/styles.css");
-         Put (F, Styles);
+         Create (F, To_Virtual_String (Dir & "/styles.css"));
+         Put (F, To_Virtual_String (Styles), Success);
          Close (F);
       end Write_CSS;
 
@@ -90,7 +104,7 @@ package body Formats is
             ));
 
          Cooked_Title : constant AHTML.Strings.Cooked :=
-            AHTML.Strings.Cook (AHTML.Strings.SU.To_String (F.M.Title));
+            AHTML.Strings.Cook (To_Virtual_String (F.M.Title));
 
          Title_Text : constant AHTML.Node.Node_Handle :=
             D.Mk_Text (Cooked_Title);
@@ -126,7 +140,7 @@ package body Formats is
             Ret.Active.Doc.Mk_Element ("p");
 
          Cooked_Content : constant AHTML.Strings.Cooked :=
-            AHTML.Strings.Cook (AHTML.Strings.SU.To_String (F.B.Text));
+            AHTML.Strings.Cook (To_Virtual_String (F.B.Text));
 
          T : constant AHTML.Node.Node_Handle :=
             Ret.Active.Doc.Mk_Text (Cooked_Content);
