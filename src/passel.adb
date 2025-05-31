@@ -49,12 +49,12 @@ is
 
    procedure Do_Convert (Target : String)
    is
-      Parser : TMK.Parser;
       W : Formats.Web := Formats.Ret;
 
       procedure Convert_File (Dir : Directory_Entry_Type) is
          Path : constant String := Full_Name (Dir);
          File : File_Type;
+         Parser : TMK.Parser;
       begin
          Open (File, In_File, Path);
 

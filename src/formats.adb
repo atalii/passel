@@ -30,7 +30,9 @@ package body Formats is
       procedure Write_Page (P : Page)
       is
          Out_Path : constant Virtual_String :=
-            To_Virtual_String (Dir) &  '/'  & AHTML.Strings.Unwrap (P.File_Name) & ".html";
+            To_Virtual_String (Dir) &
+            '/' &
+            AHTML.Strings.Unwrap (P.File_Name) & ".html";
 
          F : File_Output_Text_Stream;
          Success : Boolean := True;
@@ -89,6 +91,8 @@ package body Formats is
 
       procedure New_Page
       is
+         use Page_Vec;
+
          D : AHTML.Node.Doc := AHTML.Node.HTML_Doc;
          R : constant AHTML.Node.Node_Handle := D.Mk_Element ("html");
          H : constant AHTML.Node.Node_Handle := D.Mk_Element ("head");
@@ -117,6 +121,8 @@ package body Formats is
 
          Title_Text : constant AHTML.Node.Node_Handle :=
             D.Mk_Text (Cooked_Title);
+
+         Pages : Page_Vec.Vector := Self.Pages;
       begin
          D.With_Attribute (Style_Link, Style_Rel);
          D.With_Attribute (Style_Link, Style_Type);
@@ -134,9 +140,13 @@ package body Formats is
          D.With_Child (R, B);
          D.With_Child (B, M);
 
+         if Self.State = Building_Page then
+            Pages := @ & Self.Active;
+         end if;
+
          Ret :=
             (State => Building_Page,
-             Pages => Self.Pages,
+             Pages => Pages,
              Active =>
                 (File_Name => Cooked_Title, -- XXX: wrong escapes
                 Doc => D, Handle => M));
