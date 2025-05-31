@@ -1,20 +1,30 @@
-with Ada.Text_IO;
-use Ada.Text_IO;
+with VSS.Strings;
+use VSS.Strings;
+
+with VSS.Text_Streams;
+
+with VSS.Text_Streams.Standards;
+use VSS.Text_Streams.Standards;
 
 package body Log is
 
    Tags : constant Tag_List :=
       [Trace => "[TRACE]",
-       Info  => "[INFO ]",
-       Warn  => "[WARN ]",
-       Error => "[ERROR]",
-       Fatal => "[FATAL]"];
+      Info  => "[INFO ]",
+      Warn  => "[WARN ]",
+      Error => "[ERROR]",
+      Fatal => "[FATAL]"];
 
-   procedure Print (L : Level; Msg : String)
+   procedure Print (L : Level; Msg : VSS.Strings.Virtual_String)
    is
-      Tag : constant String := Tags (L);
+      Tag : constant VSS.Strings.Virtual_String := Tags (L);
+      Log_Line : constant VSS.Strings.Virtual_String :=
+         Tag & ' ' & Msg;
+
+      Success : Boolean := True;
+      O : VSS.Text_Streams.Output_Text_Stream'Class := Standard_Error;
    begin
-      Put_Line (Tag & " " & Msg);
+      VSS.Text_Streams.Put_Line (O, Log_Line, Success);
    end Print;
 
 end Log;

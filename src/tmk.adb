@@ -1,5 +1,8 @@
 with Log;
 
+with VSS.Strings.Conversions;
+use VSS.Strings.Conversions;
+
 package body TMK is
 
    function Is_Metadata (X : String) return Boolean is
@@ -120,12 +123,18 @@ package body TMK is
          elsif Key = "author" then
             P.Meta.Author := Val_UB;
          else
-            Log.Print (Log.Warn, "Ignoring unknown: " & Key);
+            Log.Print (
+               Log.Warn,
+               To_Virtual_String ("Ignoring unknown: " & Key));
+
          end if;
       end With_Metadata;
 
    begin
-      Log.Print (Log.Trace, "Found metadata: " & Key & " := " & Val);
+      Log.Print (
+         Log.Trace,
+         To_Virtual_String ("Found metadata: " & Key & " := " & Val));
+
       With_Metadata (Key, Val);
    end Parse_Metadata;
 

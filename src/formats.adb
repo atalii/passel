@@ -6,6 +6,9 @@ use VSS.Text_Streams.File_Output;
 with VSS.Text_Streams;
 use VSS.Text_Streams;
 
+with VSS.Strings;
+use VSS.Strings;
+
 with VSS.Strings.Conversions;
 use VSS.Strings.Conversions;
 
@@ -26,13 +29,15 @@ package body Formats is
 
       procedure Write_Page (P : Page)
       is
-         Out_Path : constant String := Dir & "/test.html";
+         Out_Path : constant Virtual_String :=
+            To_Virtual_String (Dir) &  '/'  & AHTML.Strings.Unwrap (P.File_Name) & ".html";
+
          F : File_Output_Text_Stream;
          Success : Boolean := True;
       begin
          Log.Print (Log.Info, "Writing file: " & Out_Path);
 
-         Create (F, To_Virtual_String (Out_Path));
+         Create (F, Out_Path);
          Put (F, P.Doc.To_String, Success);
 
          if not Success then
@@ -56,10 +61,14 @@ package body Formats is
       Finalize_Page (W);
 
       if not Dirs.Exists (Dir) then
-         Log.Print (Log.Info, "Creating dir: " & Dir);
+         Log.Print (Log.Info,
+           To_Virtual_String ("Creating dir: " & Dir));
+
          Dirs.Create_Directory (Dir);
       else
-         Log.Print (Log.Error, "Dir exists: " & Dir);
+         Log.Print (Log.Error,
+            To_Virtual_String ("Dir exists: " & Dir));
+
          raise Target_Exists;
       end if;
 
