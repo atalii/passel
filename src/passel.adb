@@ -49,16 +49,13 @@ is
 
    procedure Do_Convert (Target : String)
    is
-      Ent : Directory_Entry_Type;
-      Dir_Search : Search_Type;
-
       Parser : TMK.Parser;
       W : Formats.Web := Formats.Ret;
 
-      procedure Convert_File (Path : String) is
+      procedure Convert_File (Dir : Directory_Entry_Type) is
+         Path : constant String := Full_Name (Dir);
          File : File_Type;
       begin
-
          Open (File, In_File, Path);
 
          while not End_Of_File (File) loop
@@ -72,18 +69,15 @@ is
       end Convert_File;
 
    begin
-      Start_Search (Dir_Search, Target, "*.tmk");
 
-      loop
-         Get_Next_Entry (Dir_Search, Ent);
-         if Kind (Ent) = Ordinary_File then
-            Convert_File (Full_Name (Ent));
-         end if;
-
-         exit when not More_Entries (Dir_Search);
-      end loop;
+      Search (
+         Target,
+         "",
+         [Ordinary_File => True, others => False],
+         Convert_File'Access);
 
       Formats.Write_Out (W, "/tmp/target");
+
    end Do_Convert;
 
    Action_Requested : constant Action := Check_Args;
