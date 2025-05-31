@@ -44,7 +44,7 @@ is
    is
       Bin_Name : constant String := Ada.Command_Line.Command_Name;
    begin
-      Ada.Text_IO.Put_Line (Bin_Name & ": [--help] <fname>");
+      Ada.Text_IO.Put_Line (Bin_Name & ": [--help] <dir>");
    end Show_Help;
 
    procedure Do_Convert (Target : String)
