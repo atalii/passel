@@ -49,7 +49,7 @@ is
 
    procedure Do_Convert (Target : String)
    is
-      W : Formats.Web := Formats.Ret;
+      W : Formats.Web.Web := Formats.Web.Ret;
 
       procedure Convert_File (Dir : Directory_Entry_Type) is
          Path : constant String := Full_Name (Dir);
@@ -64,7 +64,7 @@ is
 
          Close (File);
 
-         W := Formats.Render (Parser, W);
+         W := Formats.Web.Render (Parser, W);
 
       end Convert_File;
 
@@ -76,7 +76,7 @@ is
          [Ordinary_File => True, others => False],
          Convert_File'Access);
 
-      Formats.Write_Out (W, "/tmp/target");
+      Formats.Web.Write_Out (W, "/tmp/target");
 
    end Do_Convert;
 

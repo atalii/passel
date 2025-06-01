@@ -20,23 +20,25 @@ package Formats is
    package Page_Vec is new Ada.Containers.Vectors
       (Index_Type => Natural, Element_Type => Page);
 
-   type Web (State : State_Flag := Init) is record
-      Pages : Page_Vec.Vector;
+   package Web is
+      type Web (State : State_Flag := Init) is record
+         Pages : Page_Vec.Vector;
 
-      case State is
-         when Init => null;
-         when Building_Page => Active : Page;
-      end case;
-   end record;
+         case State is
+            when Init => null;
+            when Building_Page => Active : Page;
+         end case;
+      end record;
 
-   function Ret return Web;
-   function Bind (Self : Web; F : TMK.Renderer_Feed) return Web;
-   function Render is new TMK.Render (Renderer => Web, Bind => Bind);
+      function Ret return Web;
+      function Bind (Self : Web; F : TMK.Renderer_Feed) return Web;
+      function Render is new TMK.Render (Renderer => Web, Bind => Bind);
 
-   procedure Write_Out (W : in out Web; Dir : String);
+      procedure Write_Out (W : in out Web; Dir : String);
+   end Web;
 
 private
 
-   procedure Finalize_Page (Self : in out Web);
+   procedure Finalize_Page (Self : in out Web.Web);
 
 end Formats;
