@@ -11,28 +11,25 @@ package body TMK is
    procedure Feed (P : in out Parser; Line : String)
    is
       Trimmed_Line : constant String := Eat_Space (Line);
+
+      function Transition_State_Fallible return Boolean is
+      begin
+         case P.State is
+            when Header =>
+               return P.Feed_Header_Line (Trimmed_Line);
+            when Expecting_Block =>
+               return P.Feed_Expecting_Block (Trimmed_Line);
+            when In_Par =>
+               return P.Feed_In_Par (Trimmed_Line);
+         end case;
+      end Transition_State_Fallible;
    begin
-      if Trimmed_Line'Length = 0 then
-         if P.State = In_Par then
-            P.State := Expecting_Block;
-         end if;
-
-         return;
-      end if;
-
-      if P.State = Header then
-         P.Feed_Header_Line (Trimmed_Line);
-      end if;
-
-      --  The previous call might decide this isn't a header
-      --  line. Then, we try the line again with different
-      --  prod rules.
-
-      if P.State = Header then
-         return;
-      end if;
-
-      P.Feed_Paragraph_Line (Line);
+      --  Transition_State_Fallible branches on P.State to determine how
+      --  to treat this line. If all's well, it returns True. Otherwise,
+      --  it changes P.State and tries again.
+      loop
+         exit when Transition_State_Fallible;
+      end loop;
 
    end Feed;
 
@@ -65,21 +62,44 @@ package body TMK is
    function Eat_Space (X : String) return String
    is (Eat_Space_L (Eat_Space_R (X)));
 
-   procedure Feed_Header_Line (P : in out Parser; Line : String) is
+   function Feed_Header_Line (P : in out Parser; Line : String)
+      return Boolean is
    begin
+      if Line = "" then
+         return True;
+      end if;
+
       if not Is_Metadata (Line) then
          P.State := Expecting_Block;
-         return;
-      else
-         P.Parse_Metadata (Line (Line'First + 1 .. Line'Last));
+         return False;
       end if;
+
+      P.Parse_Metadata (Line (Line'First + 1 .. Line'Last));
+      return True;
    end Feed_Header_Line;
 
-   procedure Feed_Paragraph_Line (P : in out Parser; Line : String)
+   function Feed_Expecting_Block (P : in out Parser; Line : String)
+      return Boolean
    is
       Unbounded_Line : constant SU.Unbounded_String :=
          SU.To_Unbounded_String (Line);
+
       Par : constant Block := (T => Paragraph, Text => Unbounded_Line);
+   begin
+      if Line = "" then
+         return True;
+      end if;
+
+      P.Block_List.Append (Par);
+      P.State := In_Par;
+      return True;
+   end Feed_Expecting_Block;
+
+   function Feed_In_Par (P : in out Parser; Line : String)
+      return Boolean
+   is
+      Unbounded_Line : constant SU.Unbounded_String :=
+         SU.To_Unbounded_String (Line);
 
       procedure Add_Line (E : in out Block) is
       begin
@@ -87,19 +107,16 @@ package body TMK is
          SU.Append (E.Text, Unbounded_Line);
       end Add_Line;
    begin
-      case P.State is
-         when Expecting_Block => P.Block_List.Append (Par);
-         when In_Par =>
-            P.Block_List.Update_Element
-               (P.Block_List.Last, Add_Line'Access);
+      if Line = "" then
+         P.State := Expecting_Block;
+         return True;
+      end if;
 
-         --  TODO: we have a precond guaranteeing that this
-         --  can't happen. we shouldn't need this branch.
-         when others => null;
-      end case;
+      P.Block_List.Update_Element
+         (P.Block_List.Last, Add_Line'Access);
 
-      P.State := In_Par;
-   end Feed_Paragraph_Line;
+      return True;
+   end Feed_In_Par;
 
    procedure Parse_Metadata (P : in out Parser; Line : String)
    is

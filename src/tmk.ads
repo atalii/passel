@@ -52,10 +52,17 @@ private
       State : Parser_States := Header;
    end record;
 
-   procedure Feed_Header_Line (P : in out Parser; Line : String)
+   function Feed_Header_Line (P : in out Parser; Line : String)
+      return Boolean
       with Pre => P.State = Header;
-   procedure Feed_Paragraph_Line (P : in out Parser; Line : String)
-      with Pre => P.State = Expecting_Block or P.State = In_Par;
+
+   function Feed_Expecting_Block (P : in out Parser; Line : String)
+      return Boolean
+      with Pre => P.State = Header;
+
+   function Feed_In_Par (P : in out Parser; Line : String)
+      return Boolean
+      with Pre => P.State = In_Par;
 
    procedure Parse_Metadata (P : in out Parser; Line : String);
 
