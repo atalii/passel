@@ -36,7 +36,7 @@ package TMK is
    generic
       type Renderer is private;
 
-      with function Bind (Self : Renderer; F : Renderer_Feed) return Renderer;
+      with function Feed (Self : Renderer; F : Renderer_Feed) return Renderer;
    function Render (P : Parser; R : Renderer) return Renderer;
 
 private

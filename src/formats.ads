@@ -31,8 +31,8 @@ package Formats is
       end record;
 
       function Empty return Web;
-      function Bind (Self : Web; F : TMK.Renderer_Feed) return Web;
-      function Render is new TMK.Render (Renderer => Web, Bind => Bind);
+      function Feed (Self : Web; F : TMK.Renderer_Feed) return Web;
+      function Render is new TMK.Render (Renderer => Web, Feed => Feed);
 
       procedure Write_Out (W : in out Web; Dir : String);
    end Web;

@@ -86,7 +86,7 @@ package body Formats is
       function Empty return Web is
          (State => Init, Pages => Page_Vec.Empty);
 
-      function Bind (Self : Web; F : TMK.Renderer_Feed) return Web
+      function Feed (Self : Web; F : TMK.Renderer_Feed) return Web
       is
 
          Ret : Web := Self;
@@ -187,7 +187,7 @@ package body Formats is
          end case;
 
          return Ret;
-      end Bind;
+      end Feed;
 
    end Web;
 

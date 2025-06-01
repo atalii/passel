@@ -142,10 +142,10 @@ package body TMK is
    is
       Tmp : Renderer := R;
    begin
-      Tmp := Bind (R, (K => Metadata_Kind, M => P.Meta));
+      Tmp := Feed (R, (K => Metadata_Kind, M => P.Meta));
 
       for Block of P.Block_List loop
-         Tmp := Bind (Tmp, (K => Block_Kind, B => Block));
+         Tmp := Feed (Tmp, (K => Block_Kind, B => Block));
       end loop;
 
       return Tmp;
