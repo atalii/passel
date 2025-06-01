@@ -49,7 +49,7 @@ is
 
    procedure Do_Convert (Target : String)
    is
-      W : Formats.Web.Web := Formats.Web.Ret;
+      W : Formats.Web.Web := Formats.Web.Empty;
 
       procedure Convert_File (Dir : Directory_Entry_Type) is
          Path : constant String := Full_Name (Dir);

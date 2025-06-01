@@ -83,7 +83,7 @@ package body Formats is
          Write_CSS;
       end Write_Out;
 
-      function Ret return Web is
+      function Empty return Web is
          (State => Init, Pages => Page_Vec.Empty);
 
       function Bind (Self : Web; F : TMK.Renderer_Feed) return Web

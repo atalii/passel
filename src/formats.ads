@@ -30,7 +30,7 @@ package Formats is
          end case;
       end record;
 
-      function Ret return Web;
+      function Empty return Web;
       function Bind (Self : Web; F : TMK.Renderer_Feed) return Web;
       function Render is new TMK.Render (Renderer => Web, Bind => Bind);
 
