@@ -1,53 +1,65 @@
-with Ada.Command_Line;
-
 with Ada.Directories;
 use  Ada.Directories;
 
 with Ada.Text_IO;
 use  Ada.Text_IO;
 
+with Ada.Command_Line;
+
+with Ada.Strings.UTF_Encoding;
+use Ada.Strings.UTF_Encoding;
+
+with Ada.Strings.UTF_Encoding.Strings;
+use Ada.Strings.UTF_Encoding.Strings;
+
 with TMK;
 with Formats;
 with Log;
 
+with VSS.Strings;
+use VSS.Strings;
+
+with VSS.Strings.Conversions;
+use VSS.Strings.Conversions;
+
+with VSS.Text_Streams.Standards;
+use VSS.Text_Streams.Standards;
+
+with VSS.Text_Streams;
+use VSS.Text_Streams;
+
+with VSS.Command_Line;
+
+with GNAT.OS_Lib;
+
 procedure Passel
 is
-   type Action_Flag is (Help, Convert);
-
-   type Action (F : Action_Flag := Help) is record
-      case F is
-         when Help => null;
-         when Convert => Target : Positive;
-      end case;
+   type Action is record
+      Target : Virtual_String;
    end record;
 
    function Check_Args return Action
    is
-      N : constant Natural := Ada.Command_Line.Argument_Count;
+
+      Target_Opt : constant VSS.Command_Line.Positional_Option :=
+         (Name => "target",
+         Description => "Location of site source.");
+
    begin
-      if N < 1 then
-         return (F => Help);
+      VSS.Command_Line.Add_Option (Target_Opt);
+      VSS.Command_Line.Add_Help_Option;
+
+      VSS.Command_Line.Process;
+
+      if not VSS.Command_Line.Is_Specified (Target_Opt) then
+         Put_Line (Standard_Error, "Missing required argument.");
+         GNAT.OS_Lib.OS_Exit (1);
       end if;
 
-      declare
-         T : constant String := Ada.Command_Line.Argument (1);
-      begin
-         if T = "--help" then
-            return (F => Help);
-         end if;
-
-         return (F => Convert, Target => 1);
-      end;
+      return (Target => VSS.Command_Line.Value (Target_Opt));
    end Check_Args;
 
-   procedure Show_Help
-   is
-      Bin_Name : constant String := Ada.Command_Line.Command_Name;
-   begin
-      Ada.Text_IO.Put_Line (Bin_Name & ": [--help] <dir>");
-   end Show_Help;
-
-   procedure Do_Convert (Target : String)
+   procedure Do_Convert (Target : Virtual_String)
    is
       W : Formats.Web.Web := Formats.Web.Empty;
 
@@ -71,7 +83,7 @@ is
    begin
 
       Search (
-         Target,
+         Decode (To_UTF_8_String (Target)),
          "",
          [Ordinary_File => True, others => False],
          Convert_File'Access);
@@ -83,11 +95,8 @@ is
    Action_Requested : constant Action := Check_Args;
 
 begin
-   case Action_Requested.F is
-      when Help => Show_Help;
-      when Convert => Do_Convert
-         (Ada.Command_Line.Argument (Action_Requested.Target));
-   end case;
+
+   Do_Convert (Action_Requested.Target);
 
 exception
 
