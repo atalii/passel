@@ -22,12 +22,6 @@ use VSS.Strings;
 with VSS.Strings.Conversions;
 use VSS.Strings.Conversions;
 
-with VSS.Text_Streams.Standards;
-use VSS.Text_Streams.Standards;
-
-with VSS.Text_Streams;
-use VSS.Text_Streams;
-
 with VSS.Command_Line;
 
 with GNAT.OS_Lib;
