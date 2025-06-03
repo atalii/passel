@@ -29,31 +29,31 @@ with GNAT.OS_Lib;
 procedure Passel
 is
    type Action is record
-      Target : Virtual_String;
+      Source : Virtual_String;
    end record;
 
    function Check_Args return Action
    is
 
-      Target_Opt : constant VSS.Command_Line.Positional_Option :=
-         (Name => "target",
+      Source : constant VSS.Command_Line.Positional_Option :=
+         (Name => "source",
          Description => "Location of site source.");
 
    begin
-      VSS.Command_Line.Add_Option (Target_Opt);
+      VSS.Command_Line.Add_Option (Source);
       VSS.Command_Line.Add_Help_Option;
 
       VSS.Command_Line.Process;
 
-      if not VSS.Command_Line.Is_Specified (Target_Opt) then
+      if not VSS.Command_Line.Is_Specified (Source) then
          Put_Line (Standard_Error, "Missing required argument.");
          GNAT.OS_Lib.OS_Exit (1);
       end if;
 
-      return (Target => VSS.Command_Line.Value (Target_Opt));
+      return (Source => VSS.Command_Line.Value (Source));
    end Check_Args;
 
-   procedure Do_Convert (Target : Virtual_String)
+   procedure Do_Convert (Source : Virtual_String)
    is
       W : Formats.Web.Web := Formats.Web.Empty;
 
@@ -77,7 +77,7 @@ is
    begin
 
       Search (
-         Decode (To_UTF_8_String (Target)),
+         Decode (To_UTF_8_String (Source)),
          "",
          [Ordinary_File => True, others => False],
          Convert_File'Access);
@@ -90,7 +90,7 @@ is
 
 begin
 
-   Do_Convert (Action_Requested.Target);
+   Do_Convert (Action_Requested.Source);
 
 exception
 
