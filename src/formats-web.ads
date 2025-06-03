@@ -1,9 +1,15 @@
 with TMK;
 
+with VSS.String_Vectors;
+
 package Formats.Web is
+
+   use  VSS.String_Vectors;
 
    type Web (State : State_Flag := Init) is record
       Pages : Page_Vec.Vector;
+      Index_Links : Virtual_String_Vector;
+
       case State is
          when Init => null;
          when Building_Page => Active : Page;
@@ -19,5 +25,7 @@ package Formats.Web is
 private
 
    procedure Finalize_Page (Self : in out Web);
+   procedure Add_Index (Self : in out Web);
+   function Scaffold_Page (Title : AHTML.Strings.Cooked) return Page;
 
 end Formats.Web;

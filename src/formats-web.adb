@@ -60,6 +60,8 @@ package body Formats.Web is
       end Write_CSS;
 
    begin
+
+      Add_Index (W);
       Finalize_Page (W);
 
       if not Dirs.Exists (Dir) then
@@ -82,7 +84,9 @@ package body Formats.Web is
    end Write_Out;
 
    function Empty return Web is
-      (State => Init, Pages => Page_Vec.Empty);
+      (State => Init,
+      Index_Links => Empty_Virtual_String_Vector,
+      Pages => Page_Vec.Empty);
 
    function Feed (Self : Web; F : TMK.Renderer_Feed) return Web
    is
@@ -91,7 +95,109 @@ package body Formats.Web is
 
       procedure New_Page
       is
-         use Page_Vec;
+
+         Cooked_Title : constant AHTML.Strings.Cooked :=
+            AHTML.Strings.Cook (To_Virtual_String (F.M.Title));
+
+         P : constant Page := Scaffold_Page (Cooked_Title);
+
+      begin
+         if Self.State = Building_Page then
+            Finalize_Page (Ret);
+         end if;
+
+         Ret :=
+            (State => Building_Page,
+             Pages => Ret.Pages,
+             Index_Links => Ret.Index_Links,
+             Active => P);
+
+      end New_Page;
+
+      procedure Add_Block
+      is
+         B : constant AHTML.Node.Node_Handle := Ret.Active.Handle;
+         P : constant AHTML.Node.Node_Handle :=
+            Ret.Active.Doc.Mk_Element ("p");
+
+         Cooked_Content : constant AHTML.Strings.Cooked :=
+            AHTML.Strings.Cook (To_Virtual_String (F.B.Text));
+
+         T : constant AHTML.Node.Node_Handle :=
+            Ret.Active.Doc.Mk_Text (Cooked_Content);
+      begin
+         Ret.Active.Doc.With_Child (P, T);
+         Ret.Active.Doc.With_Child (B, P);
+      end Add_Block;
+
+   begin
+      case F.K is
+         when TMK.Metadata_Kind => New_Page;
+         when TMK.Block_Kind => Add_Block;
+      end case;
+
+      return Ret;
+   end Feed;
+
+   procedure Finalize_Page (Self : in out Web)
+   is
+      use AHTML.Strings;
+   begin
+      if Self.State = Building_Page then
+         Self.Pages.Append (Self.Active);
+         Append (Self.Index_Links, Unwrap (Self.Active.File_Name));
+      end if;
+
+      Self :=
+         (State => Init,
+         Pages => Self.Pages,
+         Index_Links => Self.Index_Links);
+
+   end Finalize_Page;
+
+   ---------------
+   -- Add_Index --
+   ---------------
+
+   procedure Add_Index (Self : in out Web)
+   is
+
+      use type Page_Vec.Vector;
+      use AHTML.Strings;
+
+      P : Page := Scaffold_Page (AHTML.Strings.Cook ("index"));
+      U : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("ul");
+
+   begin
+
+      P.Doc.With_Child (P.Handle, U);
+
+      for Link of Self.Index_Links loop
+         declare
+            L : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("li");
+            A : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("a");
+            T : constant AHTML.Node.Node_Handle := P.Doc.Mk_Text (Cook (Link));
+            H : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+               (Denote ("href"), Cook ("/" & Link & ".html"));
+         begin
+            P.Doc.With_Child (U, L);
+            P.Doc.With_Child (L, A);
+            P.Doc.With_Child (A, T);
+
+            P.Doc.With_Attribute (A, H);
+         end;
+      end loop;
+
+      Self.Pages := @ & P;
+
+   end Add_Index;
+
+   -------------------
+   -- Scaffold_Page --
+   -------------------
+
+   function Scaffold_Page (Title : AHTML.Strings.Cooked) return Page
+   is
 
          D : AHTML.Node.Doc := AHTML.Node.HTML_Doc;
          R : constant AHTML.Node.Node_Handle := D.Mk_Element ("html");
@@ -126,14 +232,9 @@ package body Formats.Web is
             (AHTML.Strings.Denote ("content"), AHTML.Strings.Cook
                ("width=device-width, initial-scale=1.0"));
 
-         Cooked_Title : constant AHTML.Strings.Cooked :=
-            AHTML.Strings.Cook (To_Virtual_String (F.M.Title));
+         Title_Text : constant AHTML.Node.Node_Handle := D.Mk_Text (Title);
 
-         Title_Text : constant AHTML.Node.Node_Handle :=
-            D.Mk_Text (Cooked_Title);
-
-         Pages : Page_Vec.Vector := Self.Pages;
-      begin
+   begin
          D.With_Attribute (Style_Link, Style_Rel);
          D.With_Attribute (Style_Link, Style_Type);
          D.With_Attribute (Style_Link, Style_Href);
@@ -150,50 +251,10 @@ package body Formats.Web is
          D.With_Child (R, B);
          D.With_Child (B, M);
 
-         if Self.State = Building_Page then
-            Pages := @ & Self.Active;
-         end if;
+         --  TODO: Using the given title as a file name and <title> is bad
+         --  (and also a vulnerability if it contains ../).
+         return (File_Name => Title, Doc => D, Handle => M);
 
-         Ret :=
-            (State => Building_Page,
-             Pages => Pages,
-             Active =>
-                (File_Name => Cooked_Title, -- XXX: wrong escapes
-                Doc => D, Handle => M));
-      end New_Page;
-
-      procedure Add_Block
-      is
-         B : constant AHTML.Node.Node_Handle := Ret.Active.Handle;
-         P : constant AHTML.Node.Node_Handle :=
-            Ret.Active.Doc.Mk_Element ("p");
-
-         Cooked_Content : constant AHTML.Strings.Cooked :=
-            AHTML.Strings.Cook (To_Virtual_String (F.B.Text));
-
-         T : constant AHTML.Node.Node_Handle :=
-            Ret.Active.Doc.Mk_Text (Cooked_Content);
-      begin
-         Ret.Active.Doc.With_Child (P, T);
-         Ret.Active.Doc.With_Child (B, P);
-      end Add_Block;
-
-   begin
-      case F.K is
-         when TMK.Metadata_Kind => New_Page;
-         when TMK.Block_Kind => Add_Block;
-      end case;
-
-      return Ret;
-   end Feed;
-
-   procedure Finalize_Page (Self : in out Web)
-   is begin
-      if Self.State = Building_Page then
-         Self.Pages.Append (Self.Active);
-      end if;
-
-      Self := (State => Init, Pages => Self.Pages);
-   end Finalize_Page;
+   end Scaffold_Page;
 
 end Formats.Web;
