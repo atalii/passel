@@ -61,8 +61,8 @@ package body Formats.Web is
 
    begin
 
-      Add_Index (W);
       Finalize_Page (W);
+      Add_Index (W);
 
       if not Dirs.Exists (Dir) then
          Log.Print (Log.Info,
