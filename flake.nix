@@ -26,7 +26,7 @@
               version = "0.1.0";
               index = alirenix.packages.x86_64-linux.community-index;
               alire = alirenix.packages.x86_64-linux.alire;
-              depsHash = "sha256-uljt5kgnMzzvT9rSl+vnQnNpKx0YSX9ZAVijV2puP8s=";
+              depsHash = "sha256-GFUrwFQTINHNd/wBRREMOwRr//XzBhACQrXyXeBl5lE=";
             };
 
         test-site = pkgs.callPackage self.lib.buildSite {

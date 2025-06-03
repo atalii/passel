@@ -22,11 +22,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1747587792,
-        "narHash": "sha256-97en6By1J5sW2Ef7ntMr7F0g3r4nOU5OXSTjot2rrVQ=",
+        "lastModified": 1748914829,
+        "narHash": "sha256-wcbuKg7/Qwif+6wMy/vyUo9BdxgtySbI/ct8GPxcFJ4=",
         "owner": "atalii",
         "repo": "alirenix",
-        "rev": "aeb9193e2bce3841d04c91021cd56fd8288ed770",
+        "rev": "34905eb754b004098375c19603805c20c3736bf6",
         "type": "github"
       },
       "original": {
