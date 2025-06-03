@@ -14,6 +14,7 @@ use Ada.Strings.UTF_Encoding.Strings;
 
 with TMK;
 with Formats;
+with Formats.Web;
 with Log;
 
 with VSS.Strings;
