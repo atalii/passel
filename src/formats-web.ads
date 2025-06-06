@@ -1,10 +1,11 @@
 with TMK;
 
 with VSS.String_Vectors;
+private with VSS.Strings;
 
 package Formats.Web is
 
-   use  VSS.String_Vectors;
+   use VSS.String_Vectors;
 
    type Web (State : State_Flag := Init) is record
       Pages : Page_Vec.Vector;
@@ -24,8 +25,10 @@ package Formats.Web is
 
 private
 
+   use VSS.Strings;
+
    procedure Finalize_Page (Self : in out Web);
    procedure Add_Index (Self : in out Web);
-   function Scaffold_Page (Title : AHTML.Strings.Cooked) return Page;
+   function Scaffold_Page (Title : Virtual_String) return Page;
 
 end Formats.Web;

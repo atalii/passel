@@ -12,6 +12,9 @@ use VSS.Strings;
 with VSS.Strings.Conversions;
 use VSS.Strings.Conversions;
 
+with VSS.Transformers;
+with VSS.Transformers.Casing;
+
 with Log;
 
 package body Formats.Web is
@@ -30,9 +33,8 @@ package body Formats.Web is
       procedure Write_Page (P : Page)
       is
          Out_Path : constant Virtual_String :=
-            To_Virtual_String (Dir) &
-            '/' &
-            AHTML.Strings.Unwrap (P.File_Name) & ".html";
+            To_Virtual_String (Dir) & AHTML.Strings.Unwrap (P.File_Name);
+            --  This is okay because all P.File_Name's end with a '/'.
 
          F : File_Output_Text_Stream;
          Success : Boolean := True;
@@ -52,9 +54,11 @@ package body Formats.Web is
       is
          F : File_Output_Text_Stream;
          Success : Boolean := True;
+         Style_Path : constant Virtual_String
+           := To_Virtual_String (Dir) & "/styles.css";
       begin
-         Log.Print (Log.Info, "Writing styles.css");
-         Create (F, To_Virtual_String (Dir & "/styles.css"));
+         Log.Print (Log.Info, "Writing " & Style_Path);
+         Create (F, Style_Path);
          Put (F, To_Virtual_String (Styles), Success);
          Close (F);
       end Write_CSS;
@@ -65,10 +69,13 @@ package body Formats.Web is
       Add_Index (W);
 
       if not Dirs.Exists (Dir) then
-         Log.Print (Log.Info,
-           To_Virtual_String ("Creating dir: " & Dir));
-
+         Log.Print (Log.Info, "Creating dir: " & To_Virtual_String (Dir));
          Dirs.Create_Directory (Dir);
+
+         Log.Print (Log.Info, "Creating dir: "
+           & To_Virtual_String (Dir) & "/item");
+
+         Dirs.Create_Directory (Dir & "/item");
       else
          Log.Print (Log.Error,
             To_Virtual_String ("Dir exists: " & Dir));
@@ -96,10 +103,10 @@ package body Formats.Web is
       procedure New_Page
       is
 
-         Cooked_Title : constant AHTML.Strings.Cooked :=
-            AHTML.Strings.Cook (To_Virtual_String (F.M.Title));
+         Title : constant Virtual_String :=
+            To_Virtual_String (F.M.Title);
 
-         P : constant Page := Scaffold_Page (Cooked_Title);
+         P : constant Page := Scaffold_Page (Title);
 
       begin
          if Self.State = Building_Page then
@@ -165,12 +172,13 @@ package body Formats.Web is
       use type Page_Vec.Vector;
       use AHTML.Strings;
 
-      P : Page := Scaffold_Page (AHTML.Strings.Cook ("index"));
+      P : Page := Scaffold_Page ("index");
       U : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("ul");
 
    begin
 
       P.Doc.With_Child (P.Handle, U);
+      P.File_Name := Cook ("/index.html");
 
       for Link of Self.Index_Links loop
          declare
@@ -178,7 +186,7 @@ package body Formats.Web is
             A : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("a");
             T : constant AHTML.Node.Node_Handle := P.Doc.Mk_Text (Cook (Link));
             H : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
-               (Denote ("href"), Cook ("/" & Link & ".html"));
+               (Denote ("href"), Cook (Link));
          begin
             P.Doc.With_Child (U, L);
             P.Doc.With_Child (L, A);
@@ -196,43 +204,57 @@ package body Formats.Web is
    -- Scaffold_Page --
    -------------------
 
-   function Scaffold_Page (Title : AHTML.Strings.Cooked) return Page
+   function Scaffold_Page (Title : Virtual_String) return Page
    is
 
-         D : AHTML.Node.Doc := AHTML.Node.HTML_Doc;
-         R : constant AHTML.Node.Node_Handle := D.Mk_Element ("html");
-         H : constant AHTML.Node.Node_Handle := D.Mk_Element ("head");
-         T : constant AHTML.Node.Node_Handle := D.Mk_Element ("title");
-         B : constant AHTML.Node.Node_Handle := D.Mk_Element ("body");
-         M : constant AHTML.Node.Node_Handle := D.Mk_Element ("main");
+      function Make_File_Name return AHTML.Strings.Cooked
+      is
 
-         Style_Link : constant AHTML.Node.Node_Handle :=
-            D.Mk_Element ("link");
+         use VSS.Transformers;
+         use VSS.Transformers.Casing;
 
-         Style_Rel : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
-            (AHTML.Strings.Denote ("rel"),
-            AHTML.Strings.Cook ("stylesheet"));
+         Slug : constant Virtual_String := To_Lowercase.Transform (Title);
+         --   FIXME: This is a vulnerability if title contains ../.
 
-         Style_Type : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
-            (AHTML.Strings.Denote ("type"),
-            AHTML.Strings.Cook ("text/css"));
+      begin
+         return AHTML.Strings.Cook ("/item/" & Slug & ".html");
+      end Make_File_Name;
 
-         Style_Href : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
-            (AHTML.Strings.Denote ("href"),
-            AHTML.Strings.Cook ("styles.css"));
+      D : AHTML.Node.Doc := AHTML.Node.HTML_Doc;
+      R : constant AHTML.Node.Node_Handle := D.Mk_Element ("html");
+      H : constant AHTML.Node.Node_Handle := D.Mk_Element ("head");
+      T : constant AHTML.Node.Node_Handle := D.Mk_Element ("title");
+      B : constant AHTML.Node.Node_Handle := D.Mk_Element ("body");
+      M : constant AHTML.Node.Node_Handle := D.Mk_Element ("main");
 
-         Viewport : constant AHTML.Node.Node_Handle :=
-            D.Mk_Element ("meta");
+      Style_Link : constant AHTML.Node.Node_Handle :=
+         D.Mk_Element ("link");
 
-         Viewport_Name : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
-            (AHTML.Strings.Denote ("name"),
-            AHTML.Strings.Cook ("viewport"));
+      Style_Rel : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+         (AHTML.Strings.Denote ("rel"),
+         AHTML.Strings.Cook ("stylesheet"));
 
-         Viewport_Content : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
-            (AHTML.Strings.Denote ("content"), AHTML.Strings.Cook
-               ("width=device-width, initial-scale=1.0"));
+      Style_Type : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+         (AHTML.Strings.Denote ("type"),
+         AHTML.Strings.Cook ("text/css"));
 
-         Title_Text : constant AHTML.Node.Node_Handle := D.Mk_Text (Title);
+      Style_Href : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+         (AHTML.Strings.Denote ("href"),
+         AHTML.Strings.Cook ("/styles.css"));
+
+      Viewport : constant AHTML.Node.Node_Handle :=
+         D.Mk_Element ("meta");
+
+      Viewport_Name : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+         (AHTML.Strings.Denote ("name"),
+         AHTML.Strings.Cook ("viewport"));
+
+      Viewport_Content : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+         (AHTML.Strings.Denote ("content"), AHTML.Strings.Cook
+            ("width=device-width, initial-scale=1.0"));
+
+      Title_Text : constant AHTML.Node.Node_Handle := D.Mk_Text
+         (AHTML.Strings.Cook (Title));
 
    begin
          D.With_Attribute (Style_Link, Style_Rel);
@@ -253,7 +275,7 @@ package body Formats.Web is
 
          --  TODO: Using the given title as a file name and <title> is bad
          --  (and also a vulnerability if it contains ../).
-         return (File_Name => Title, Doc => D, Handle => M);
+         return (File_Name => Make_File_Name, Doc => D, Handle => M);
 
    end Scaffold_Page;
 
