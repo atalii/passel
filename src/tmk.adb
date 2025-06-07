@@ -10,6 +10,7 @@ package body TMK is
 
    procedure Feed (P : in out Parser; Line : String)
    is
+
       Trimmed_Line : constant String := Eat_Space (Line);
 
       function Transition_State_Fallible return Boolean is
@@ -23,6 +24,7 @@ package body TMK is
                return P.Feed_In_Par (Trimmed_Line);
          end case;
       end Transition_State_Fallible;
+
    begin
       --  Transition_State_Fallible branches on P.State to determine how
       --  to treat this line. If all's well, it returns True. Otherwise,
