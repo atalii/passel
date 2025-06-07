@@ -291,8 +291,6 @@ package body Formats.Web is
          D.With_Child (R, B);
          D.With_Child (B, M);
 
-         --  TODO: Using the given title as a file name and <title> is bad
-         --  (and also a vulnerability if it contains ../).
          return (File_Name => Make_File_Name, Doc => D, Handle => M);
 
    end Scaffold_Page;
