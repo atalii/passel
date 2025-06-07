@@ -142,7 +142,7 @@ package body TMK is
          else
             Log.Print (
                Log.Warn,
-               To_Virtual_String ("Ignoring unknown: " & Key));
+               To_Virtual_String ("Ignoring unknown metadata key: " & Key));
 
          end if;
       end With_Metadata;
