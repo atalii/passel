@@ -12,11 +12,12 @@ package TMK is
    package SU renames Ada.Strings.Unbounded;
    package SF renames Ada.Strings.Fixed;
 
-   type Block_Type is (Paragraph);
+   type Block_Type is (Paragraph, Heading);
 
    type Block (T : Block_Type := Paragraph) is record
       case T is
          when Paragraph => Text : SU.Unbounded_String;
+         when Heading => Heading : SU.Unbounded_String;
       end case;
    end record;
 

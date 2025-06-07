@@ -127,18 +127,44 @@ package body Formats.Web is
 
       procedure Add_Block
       is
+
          B : constant AHTML.Node.Node_Handle := Ret.Active.Handle;
-         P : constant AHTML.Node.Node_Handle :=
-            Ret.Active.Doc.Mk_Element ("p");
 
-         Cooked_Content : constant AHTML.Strings.Cooked :=
-            AHTML.Strings.Cook (To_Virtual_String (F.B.Text));
-
-         T : constant AHTML.Node.Node_Handle :=
-            Ret.Active.Doc.Mk_Text (Cooked_Content);
       begin
-         Ret.Active.Doc.With_Child (P, T);
-         Ret.Active.Doc.With_Child (B, P);
+         case F.B.T is
+            when TMK.Paragraph =>
+
+               declare
+                  P : constant AHTML.Node.Node_Handle :=
+                     Ret.Active.Doc.Mk_Element ("p");
+
+                  Cooked_Content : constant AHTML.Strings.Cooked :=
+                     AHTML.Strings.Cook (To_Virtual_String (F.B.Text));
+
+                  T : constant AHTML.Node.Node_Handle :=
+                     Ret.Active.Doc.Mk_Text (Cooked_Content);
+               begin
+                  Ret.Active.Doc.With_Child (P, T);
+                  Ret.Active.Doc.With_Child (B, P);
+               end;
+
+            when TMK.Heading =>
+
+               declare
+                  H : constant AHTML.Node.Node_Handle :=
+                     Ret.Active.Doc.Mk_Element ("h1");
+
+                  Cooked_Content : constant AHTML.Strings.Cooked :=
+                     AHTML.Strings.Cook (To_Virtual_String (F.B.Heading));
+
+                  T : constant AHTML.Node.Node_Handle :=
+                     Ret.Active.Doc.Mk_Text (Cooked_Content);
+               begin
+                  Ret.Active.Doc.With_Child (H, T);
+                  Ret.Active.Doc.With_Child (B, H);
+               end;
+
+         end case;
       end Add_Block;
 
    begin

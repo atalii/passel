@@ -83,17 +83,31 @@ package body TMK is
    function Feed_Expecting_Block (P : in out Parser; Line : String)
       return Boolean
    is
+
+      use type SU.Unbounded_String;
+
       Unbounded_Line : constant SU.Unbounded_String :=
          SU.To_Unbounded_String (Line);
 
       Par : constant Block := (T => Paragraph, Text => Unbounded_Line);
+
    begin
-      if Line = "" then
-         return True;
+      if SU.Head (Unbounded_Line, 2, '-') = "* " then
+         declare
+            Head : constant Block := (T => Heading, Heading =>
+               SU.To_Unbounded_String
+                  (SU.Slice (Unbounded_Line, 2, SU.Length (Unbounded_Line))));
+         begin
+            P.Block_List.Append (Head);
+         end;
+
+      elsif Unbounded_Line /= "" then
+
+         P.Block_List.Append (Par);
+         P.State := In_Par;
+
       end if;
 
-      P.Block_List.Append (Par);
-      P.State := In_Par;
       return True;
    end Feed_Expecting_Block;
 
