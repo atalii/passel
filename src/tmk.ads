@@ -23,6 +23,7 @@ package TMK is
    type Meta_T is record
       Title : SU.Unbounded_String;
       Author : SU.Unbounded_String;
+      Index : Boolean := False;
    end record;
 
    type Feed_Kind is (Block_Kind, Metadata_Kind);

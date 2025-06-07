@@ -66,7 +66,7 @@ package body Formats.Web is
    begin
 
       Finalize_Page (W);
-      Add_Index (W);
+      Fixup_Index (W);
 
       if not Dirs.Exists (Dir) then
          Log.Print (Log.Info, "Creating dir: " & To_Virtual_String (Dir));
@@ -93,6 +93,7 @@ package body Formats.Web is
    function Empty return Web is
       (State => Init,
       Index_Links => Empty_Virtual_String_Vector,
+      Index_Page => Scaffold_Page ("Index", True),
       Pages => Page_Vec.Empty);
 
    function Feed (Self : Web; F : TMK.Renderer_Feed) return Web
@@ -106,9 +107,10 @@ package body Formats.Web is
          Title : constant Virtual_String :=
             To_Virtual_String (F.M.Title);
 
-         P : constant Page := Scaffold_Page (Title);
+         P : constant Page := Scaffold_Page (Title, F.M.Index);
 
       begin
+
          if Self.State = Building_Page then
             Finalize_Page (Ret);
          end if;
@@ -117,7 +119,9 @@ package body Formats.Web is
             (State => Building_Page,
              Pages => Ret.Pages,
              Index_Links => Ret.Index_Links,
-             Active => P);
+             Index_Page => Ret.Index_Page,
+             Active => P,
+             Is_Index => F.M.Index);
 
       end New_Page;
 
@@ -150,61 +154,71 @@ package body Formats.Web is
    is
       use AHTML.Strings;
    begin
-      if Self.State = Building_Page then
+      if Self.State = Building_Page and then not Self.Is_Index then
          Self.Pages.Append (Self.Active);
          Append (Self.Index_Links, Unwrap (Self.Active.File_Name));
+      elsif Self.State = Building_Page and then Self.Is_Index then
+         Self.Index_Page := Self.Active;
       end if;
 
       Self :=
          (State => Init,
          Pages => Self.Pages,
-         Index_Links => Self.Index_Links);
+         Index_Links => Self.Index_Links,
+         Index_Page => Self.Index_Page);
 
    end Finalize_Page;
 
-   ---------------
-   -- Add_Index --
-   ---------------
+   -----------------
+   -- Fixup_Index --
+   -----------------
 
-   procedure Add_Index (Self : in out Web)
+   procedure Fixup_Index (Self : in out Web)
    is
 
       use type Page_Vec.Vector;
       use AHTML.Strings;
 
-      P : Page := Scaffold_Page ("index");
-      U : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("ul");
+      U : constant AHTML.Node.Node_Handle
+        := Self.Index_Page.Doc.Mk_Element ("ul");
 
    begin
 
-      P.Doc.With_Child (P.Handle, U);
-      P.File_Name := Cook ("/index.html");
+      Self.Index_Page.Doc.With_Child (Self.Index_Page.Handle, U);
 
       for Link of Self.Index_Links loop
          declare
-            L : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("li");
-            A : constant AHTML.Node.Node_Handle := P.Doc.Mk_Element ("a");
-            T : constant AHTML.Node.Node_Handle := P.Doc.Mk_Text (Cook (Link));
+            L : constant AHTML.Node.Node_Handle
+              := Self.Index_Page.Doc.Mk_Element ("li");
+
+            A : constant AHTML.Node.Node_Handle
+              := Self.Index_Page.Doc.Mk_Element ("a");
+
+            T : constant AHTML.Node.Node_Handle
+              := Self.Index_Page.Doc.Mk_Text (Cook (Link));
+
             H : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
                (Denote ("href"), Cook (Link));
          begin
-            P.Doc.With_Child (U, L);
-            P.Doc.With_Child (L, A);
-            P.Doc.With_Child (A, T);
+            Self.Index_Page.Doc.With_Child (U, L);
+            Self.Index_Page.Doc.With_Child (L, A);
+            Self.Index_Page.Doc.With_Child (A, T);
 
-            P.Doc.With_Attribute (A, H);
+            Self.Index_Page.Doc.With_Attribute (A, H);
          end;
       end loop;
 
-      Self.Pages := @ & P;
+      --  Add this index to the pages list so that it'll actually be written.
+      Self.Pages := @ & Self.Index_Page;
 
-   end Add_Index;
+   end Fixup_Index;
 
    -------------------
    -- Scaffold_Page --
    -------------------
 
-   function Scaffold_Page (Title : Virtual_String) return Page
+   function Scaffold_Page (Title : Virtual_String; Is_Index : Boolean := False)
+      return Page
    is
 
       function Make_File_Name return AHTML.Strings.Cooked
@@ -217,7 +231,11 @@ package body Formats.Web is
          --   FIXME: This is a vulnerability if title contains ../.
 
       begin
-         return AHTML.Strings.Cook ("/item/" & Slug & ".html");
+         if Is_Index then
+            return AHTML.Strings.Cook ("/index.html");
+         else
+            return AHTML.Strings.Cook ("/item/" & Slug & ".html");
+         end if;
       end Make_File_Name;
 
       D : AHTML.Node.Doc := AHTML.Node.HTML_Doc;

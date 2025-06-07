@@ -139,11 +139,18 @@ package body TMK is
             P.Meta.Title := Val_UB;
          elsif Key = "author" then
             P.Meta.Author := Val_UB;
+         elsif Key = "index" then
+            if Val = "true" then
+               P.Meta.Index := True;
+            else
+               Log.Print (
+                  Log.Warn,
+                  To_Virtual_String ("Ignoring unknown index value: " & Val));
+            end if;
          else
             Log.Print (
                Log.Warn,
                To_Virtual_String ("Ignoring unknown metadata key: " & Key));
-
          end if;
       end With_Metadata;
 

@@ -10,10 +10,13 @@ package Formats.Web is
    type Web (State : State_Flag := Init) is record
       Pages : Page_Vec.Vector;
       Index_Links : Virtual_String_Vector;
+      Index_Page : Page;
 
       case State is
          when Init => null;
-         when Building_Page => Active : Page;
+         when Building_Page =>
+            Active : Page;
+            Is_Index : Boolean;
       end case;
    end record;
 
@@ -28,7 +31,8 @@ private
    use VSS.Strings;
 
    procedure Finalize_Page (Self : in out Web);
-   procedure Add_Index (Self : in out Web);
-   function Scaffold_Page (Title : Virtual_String) return Page;
+   procedure Fixup_Index (Self : in out Web);
+   function Scaffold_Page (Title : Virtual_String; Is_Index : Boolean := False)
+      return Page;
 
 end Formats.Web;
