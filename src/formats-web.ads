@@ -1,11 +1,12 @@
 with TMK;
 
 with VSS.String_Vectors;
-private with VSS.Strings;
+use VSS.String_Vectors;
+
+with VSS.Strings;
+use VSS.Strings;
 
 package Formats.Web is
-
-   use VSS.String_Vectors;
 
    type Web (State : State_Flag := Init) is record
       Pages : Page_Vec.Vector;
@@ -24,11 +25,9 @@ package Formats.Web is
    function Feed (Self : Web; F : TMK.Renderer_Feed) return Web;
    function Render is new TMK.Render (Renderer => Web, Feed => Feed);
 
-   procedure Write_Out (W : in out Web; Dir : String);
+   procedure Write_Out (W : in out Web; Dir : Virtual_String);
 
 private
-
-   use VSS.Strings;
 
    procedure Finalize_Page (Self : in out Web);
    procedure Fixup_Index (Self : in out Web);

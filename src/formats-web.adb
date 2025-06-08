@@ -1,13 +1,12 @@
 with Ada.Directories;
+with Ada.Strings.UTF_Encoding;
+with Ada.Strings.UTF_Encoding.Strings;
 
 with VSS.Text_Streams.File_Output;
 use VSS.Text_Streams.File_Output;
 
 with VSS.Text_Streams;
 use VSS.Text_Streams;
-
-with VSS.Strings;
-use VSS.Strings;
 
 with VSS.Strings.Conversions;
 use VSS.Strings.Conversions;
@@ -29,14 +28,18 @@ package body Formats.Web is
       "   margin-right: auto;" &
       "}";
 
-   procedure Write_Out (W : in out Web; Dir : String)
+   procedure Write_Out (W : in out Web; Dir : Virtual_String)
    is
+
+      use Ada.Strings.UTF_Encoding;
+      use Ada.Strings.UTF_Encoding.Strings;
+
       package Dirs renames Ada.Directories;
 
       procedure Write_Page (P : Page)
       is
          Out_Path : constant Virtual_String :=
-            To_Virtual_String (Dir) & AHTML.Strings.Unwrap (P.File_Name);
+            Dir & AHTML.Strings.Unwrap (P.File_Name);
             --  This is okay because all P.File_Name's end with a '/'.
 
          F : File_Output_Text_Stream;
@@ -57,8 +60,7 @@ package body Formats.Web is
       is
          F : File_Output_Text_Stream;
          Success : Boolean := True;
-         Style_Path : constant Virtual_String
-           := To_Virtual_String (Dir) & "/styles.css";
+         Style_Path : constant Virtual_String := Dir & "/styles.css";
       begin
          Log.Print (Log.Info, "Writing " & Style_Path);
          Create (F, Style_Path);
@@ -66,22 +68,27 @@ package body Formats.Web is
          Close (F);
       end Write_CSS;
 
+      String_Dir : constant String := Decode (To_UTF_8_String (Dir));
+      --  VSS doesn't give us anything to work with directories, it seems, so
+      --  we need to do a whole thing to get it into a string that we can use
+      --  with Ada.Directories. (We could presumably use Wide_Wide_Strings
+      --  instead, but the eventual goal is to get VSS to have the interfaces
+      --  that we need.)
+
    begin
 
       Finalize_Page (W);
       Fixup_Index (W);
 
-      if not Dirs.Exists (Dir) then
-         Log.Print (Log.Info, "Creating dir: " & To_Virtual_String (Dir));
-         Dirs.Create_Directory (Dir);
+      if not Dirs.Exists (String_Dir) then
+         Log.Print (Log.Info, "Creating dir: " & Dir);
+         Dirs.Create_Directory (String_Dir);
 
-         Log.Print (Log.Info, "Creating dir: "
-           & To_Virtual_String (Dir) & "/item");
+         Log.Print (Log.Info, "Creating dir: " & Dir & "/item");
 
-         Dirs.Create_Directory (Dir & "/item");
+         Dirs.Create_Directory (String_Dir & "/item");
       else
-         Log.Print (Log.Error,
-            To_Virtual_String ("Dir exists: " & Dir));
+         Log.Print (Log.Error, "Dir exists: " & Dir);
 
          raise Target_Exists;
       end if;

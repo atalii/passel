@@ -3,6 +3,9 @@ with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Ada.Strings.Fixed;
 
+with VSS.Strings;
+use VSS.Strings;
+
 package TMK is
 
    type Parser is tagged limited private;

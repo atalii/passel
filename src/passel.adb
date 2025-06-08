@@ -31,6 +31,7 @@ procedure Passel
 is
    type Action is record
       Source : Virtual_String;
+      Dest : Virtual_String;
    end record;
 
    function Check_Args return Action
@@ -40,21 +41,36 @@ is
          (Name => "source",
          Description => "Location of site source.");
 
+      Dest : constant VSS.Command_Line.Value_Option :=
+         (Value_Name => "destination",
+          Description =>
+             "Location where generated files will be written. " &
+             "This will default to /tmp/passel.",
+          Short_Name => "d",
+          Long_Name => "dest");
+
+      Dest_Val : Virtual_String := "/tmp/passel";
+
    begin
       VSS.Command_Line.Add_Option (Source);
+      VSS.Command_Line.Add_Option (Dest);
       VSS.Command_Line.Add_Help_Option;
 
       VSS.Command_Line.Process;
 
       if not VSS.Command_Line.Is_Specified (Source) then
-         Put_Line (Standard_Error, "Missing required argument.");
+         Put_Line (Standard_Error, "Source argument is required.");
          GNAT.OS_Lib.OS_Exit (1);
       end if;
 
-      return (Source => VSS.Command_Line.Value (Source));
+      if VSS.Command_Line.Is_Specified (Dest) then
+         Dest_Val := VSS.Command_Line.Value (Dest);
+      end if;
+
+      return (Source => VSS.Command_Line.Value (Source), Dest => Dest_Val);
    end Check_Args;
 
-   procedure Do_Convert (Source : Virtual_String)
+   procedure Do_Convert (Source : Virtual_String; Dest : Virtual_String)
    is
       W : Formats.Web.Web := Formats.Web.Empty;
 
@@ -83,7 +99,7 @@ is
          [Ordinary_File => True, others => False],
          Convert_File'Access);
 
-      Formats.Web.Write_Out (W, "/tmp/target");
+      Formats.Web.Write_Out (W, Dest);
 
    end Do_Convert;
 
@@ -91,7 +107,7 @@ is
 
 begin
 
-   Do_Convert (Action_Requested.Source);
+   Do_Convert (Action_Requested.Source, Action_Requested.Dest);
 
 exception
 

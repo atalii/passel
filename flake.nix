@@ -61,11 +61,7 @@
             inherit pname version src;
 
             buildPhase = ''
-              passel .
-            '';
-
-            installPhase = ''
-              cp -r /tmp/target $out
+              passel $src -d $out
             '';
 
             buildInputs = [ passel ];
