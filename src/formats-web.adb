@@ -20,6 +20,9 @@ with Log;
 package body Formats.Web is
 
    Styles : constant String :=
+      "body {" &
+      "    font-family: sans-serif;" &
+      "}" &
       "main {" &
       "   max-width: 8.5in;" &
       "   margin-left: auto;" &
