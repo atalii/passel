@@ -6,12 +6,6 @@ use  Ada.Text_IO;
 
 with Ada.Command_Line;
 
-with Ada.Strings.UTF_Encoding;
-use Ada.Strings.UTF_Encoding;
-
-with Ada.Strings.UTF_Encoding.Strings;
-use Ada.Strings.UTF_Encoding.Strings;
-
 with TMK;
 with Formats;
 with Formats.Web;
@@ -20,12 +14,11 @@ with Log;
 with VSS.Strings;
 use VSS.Strings;
 
-with VSS.Strings.Conversions;
-use VSS.Strings.Conversions;
-
 with VSS.Command_Line;
 
 with GNAT.OS_Lib;
+
+with Passel.Util;
 
 procedure Passel.Main
 is
@@ -94,7 +87,7 @@ is
    begin
 
       Search (
-         Decode (To_UTF_8_String (Source)),
+         Passel.Util.To_String (Source),
          "",
          [Ordinary_File => True, others => False],
          Convert_File'Access);

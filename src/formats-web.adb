@@ -1,6 +1,4 @@
 with Ada.Directories;
-with Ada.Strings.UTF_Encoding;
-with Ada.Strings.UTF_Encoding.Strings;
 
 with VSS.Text_Streams.File_Output;
 use VSS.Text_Streams.File_Output;
@@ -13,6 +11,8 @@ use VSS.Strings.Conversions;
 
 with VSS.Transformers;
 with VSS.Transformers.Casing;
+
+with Passel.Util;
 
 with Log;
 
@@ -30,9 +30,6 @@ package body Formats.Web is
 
    procedure Write_Out (W : in out Web; Dir : Virtual_String)
    is
-
-      use Ada.Strings.UTF_Encoding;
-      use Ada.Strings.UTF_Encoding.Strings;
 
       package Dirs renames Ada.Directories;
 
@@ -68,7 +65,7 @@ package body Formats.Web is
          Close (F);
       end Write_CSS;
 
-      String_Dir : constant String := Decode (To_UTF_8_String (Dir));
+      String_Dir : constant String := Passel.Util.To_String (Dir);
       --  VSS doesn't give us anything to work with directories, it seems, so
       --  we need to do a whole thing to get it into a string that we can use
       --  with Ada.Directories. (We could presumably use Wide_Wide_Strings
