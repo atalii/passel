@@ -6,7 +6,7 @@ with VSS.Text_Streams;
 with VSS.Text_Streams.Standards;
 use VSS.Text_Streams.Standards;
 
-package body Log is
+package body Passel.Log is
 
    Tags : constant Tag_List :=
       [Trace => "[TRACE]",
@@ -27,4 +27,4 @@ package body Log is
       VSS.Text_Streams.Put_Line (O, Log_Line, Success);
    end Print;
 
-end Log;
+end Passel.Log;

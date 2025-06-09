@@ -1,7 +1,10 @@
-with Log;
+with Passel.Log;
+
+with VSS.Strings;
+use  VSS.Strings;
 
 with VSS.Strings.Conversions;
-use VSS.Strings.Conversions;
+use  VSS.Strings.Conversions;
 
 package body TMK is
 
@@ -159,20 +162,20 @@ package body TMK is
             if Val = "true" then
                P.Meta.Index := True;
             else
-               Log.Print (
-                  Log.Warn,
+               Passel.Log.Print (
+                  Passel.Log.Warn,
                   To_Virtual_String ("Ignoring unknown index value: " & Val));
             end if;
          else
-            Log.Print (
-               Log.Warn,
+            Passel.Log.Print (
+               Passel.Log.Warn,
                To_Virtual_String ("Ignoring unknown metadata key: " & Key));
          end if;
       end With_Metadata;
 
    begin
-      Log.Print (
-         Log.Trace,
+      Passel.Log.Print (
+         Passel.Log.Trace,
          To_Virtual_String ("Found metadata: " & Key & " := " & Val));
 
       With_Metadata (Key, Val);

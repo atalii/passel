@@ -12,9 +12,8 @@ use VSS.Strings.Conversions;
 with VSS.Transformers;
 with VSS.Transformers.Casing;
 
+with Passel.Log;
 with Passel.Util;
-
-with Log;
 
 package body Formats.Web is
 
@@ -42,13 +41,13 @@ package body Formats.Web is
          F : File_Output_Text_Stream;
          Success : Boolean := True;
       begin
-         Log.Print (Log.Info, "Writing file: " & Out_Path);
+         Passel.Log.Print (Passel.Log.Info, "Writing file: " & Out_Path);
 
          Create (F, Out_Path);
          Put (F, P.Doc.To_String, Success);
 
          if not Success then
-            Log.Print (Log.Error, "File IO failed.");
+            Passel.Log.Print (Passel.Log.Error, "File IO failed.");
          end if;
          Close (F);
       end Write_Page;
@@ -59,7 +58,7 @@ package body Formats.Web is
          Success : Boolean := True;
          Style_Path : constant Virtual_String := Dir & "/styles.css";
       begin
-         Log.Print (Log.Info, "Writing " & Style_Path);
+         Passel.Log.Print (Passel.Log.Info, "Writing " & Style_Path);
          Create (F, Style_Path);
          Put (F, To_Virtual_String (Styles), Success);
          Close (F);
@@ -78,14 +77,14 @@ package body Formats.Web is
       Fixup_Index (W);
 
       if not Dirs.Exists (String_Dir) then
-         Log.Print (Log.Info, "Creating dir: " & Dir);
+         Passel.Log.Print (Passel.Log.Info, "Creating dir: " & Dir);
          Dirs.Create_Directory (String_Dir);
 
-         Log.Print (Log.Info, "Creating dir: " & Dir & "/item");
+         Passel.Log.Print (Passel.Log.Info, "Creating dir: " & Dir & "/item");
 
          Dirs.Create_Directory (String_Dir & "/item");
       else
-         Log.Print (Log.Error, "Dir exists: " & Dir);
+         Passel.Log.Print (Passel.Log.Error, "Dir exists: " & Dir);
 
          raise Target_Exists;
       end if;

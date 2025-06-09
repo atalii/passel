@@ -9,7 +9,7 @@ with Ada.Command_Line;
 with TMK;
 with Formats;
 with Formats.Web;
-with Log;
+with Passel.Log;
 
 with VSS.Strings;
 use VSS.Strings;
@@ -52,7 +52,7 @@ is
       VSS.Command_Line.Process;
 
       if not VSS.Command_Line.Is_Specified (Source) then
-         Log.Print (Log.Error, "Source argument is required.");
+         Passel.Log.Print (Passel.Log.Error, "Source argument is required.");
          GNAT.OS_Lib.OS_Exit (1);
       end if;
 

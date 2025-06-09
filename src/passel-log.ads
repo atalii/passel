@@ -1,6 +1,6 @@
 with VSS.Strings;
 
-package Log is
+package Passel.Log is
 
    type Level is (Trace, Info, Warn, Error, Fatal);
 
@@ -10,4 +10,4 @@ private
 
    type Tag_List is array (Level) of VSS.Strings.Virtual_String;
 
-end Log;
+end Passel.Log;
