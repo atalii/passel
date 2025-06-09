@@ -52,7 +52,7 @@ is
       VSS.Command_Line.Process;
 
       if not VSS.Command_Line.Is_Specified (Source) then
-         Put_Line (Standard_Error, "Source argument is required.");
+         Log.Print (Log.Error, "Source argument is required.");
          GNAT.OS_Lib.OS_Exit (1);
       end if;
 
