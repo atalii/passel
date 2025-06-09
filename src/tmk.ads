@@ -10,7 +10,6 @@ package TMK is
    procedure Feed (P : in out Parser; Line : String);
 
    package SU renames Ada.Strings.Unbounded;
-   package SF renames Ada.Strings.Fixed;
 
    type Block_Type is (Paragraph, Heading);
 
@@ -42,6 +41,8 @@ package TMK is
    function Render (P : Parser; R : Renderer) return Renderer;
 
 private
+
+   package SF renames Ada.Strings.Fixed;
 
    type Parser_States is (Header, Expecting_Block, In_Par);
 
