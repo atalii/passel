@@ -27,7 +27,7 @@ with VSS.Command_Line;
 
 with GNAT.OS_Lib;
 
-procedure Passel
+procedure Passel.Main
 is
    type Action is record
       Source : Virtual_String;
@@ -115,4 +115,4 @@ exception
       Log.Print (Log.Error, "Target dir exists.");
       Ada.Command_Line.Set_Exit_Status (1);
 
-end Passel;
+end Passel.Main;

@@ -6,11 +6,15 @@ project Passel is
    for Object_Dir use "obj/" & Passel_Config.Build_Profile;
    for Create_Missing_Dirs use "True";
    for Exec_Dir use "bin";
-   for Main use ("passel.adb");
+   for Main use ("passel-main.adb");
 
    package Compiler is
       for Default_Switches ("Ada") use Passel_Config.Ada_Compiler_Switches;
    end Compiler;
+
+   package Builder is
+      for Executable ("passel-main.adb") use "passel";
+   end Builder;
 
    package Binder is
       for Switches ("Ada") use ("-Es"); --  Symbolic traceback
