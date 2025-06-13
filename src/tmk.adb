@@ -16,17 +16,15 @@ package body TMK is
    procedure Feed (P : in out Parser; Line : String)
    is
 
-      Trimmed_Line : constant String := Eat_Space (Line);
-
       function Transition_State_Fallible return Boolean is
       begin
          case P.State is
             when Header =>
-               return P.Feed_Header_Line (Trimmed_Line);
+               return P.Feed_Header_Line (Line);
             when Expecting_Block =>
-               return P.Feed_Expecting_Block (Trimmed_Line);
+               return P.Feed_Expecting_Block (Line);
             when In_Par =>
-               return P.Feed_In_Par (Trimmed_Line);
+               return P.Feed_In_Par (Line);
          end case;
       end Transition_State_Fallible;
 
