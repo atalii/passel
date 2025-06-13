@@ -48,7 +48,7 @@ package body TMK is
          --  TODO: do the unicode thing; we should be using VSS rather than
          --  builtin strings.
          Start := I;
-         exit when X (I) /= ' ' and X(I) /= Ada.Characters.Latin_1.LF;
+         exit when X (I) /= ' ' and then X (I) /= Ada.Characters.Latin_1.LF;
       end loop;
 
       return X (Start .. X'Last);
@@ -60,7 +60,7 @@ package body TMK is
    begin
       for I in reverse X'Range loop
          Last := I;
-         exit when X (I) /= ' ' and X(I) /= Ada.Characters.Latin_1.LF;
+         exit when X (I) /= ' ' and then X (I) /= Ada.Characters.Latin_1.LF;
       end loop;
 
       return X (X'First .. Last);
