@@ -30,11 +30,14 @@ package TMK is
       Index : Boolean := False;
    end record;
 
+   type Final_Meta_T is new Meta_T
+     with Dynamic_Predicate => SU.Length (Final_Meta_T.Title) /= 0;
+
    type Feed_Kind is (Block_Kind, Metadata_Kind);
    type Renderer_Feed (K : Feed_Kind := Block_Kind) is record
       case K is
          when Block_Kind => B : Block;
-         when Metadata_Kind => M : Meta_T;
+         when Metadata_Kind => M : Final_Meta_T;
       end case;
    end record;
 

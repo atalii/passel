@@ -1,0 +1,5 @@
+//index:true
+
+It's okay that the index has an empty title --- we know, because //index is
+true, that it should go to /index.html. But for the adjacent entry
+(problem.tmk), the lack of a title poses a problem.

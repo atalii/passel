@@ -9,6 +9,8 @@ with VSS.Strings.Conversions;
 use  VSS.Strings.Conversions;
 
 package body TMK is
+   pragma Assertion_Policy
+     (Dynamic_Predicate => Check);
 
    function Is_Metadata (X : String) return Boolean is
       (SF.Head (X, 2) = "//");
@@ -207,7 +209,7 @@ package body TMK is
    is
       Tmp : Renderer := R;
    begin
-      Tmp := Feed (R, (K => Metadata_Kind, M => P.Meta));
+      Tmp := Feed (R, (K => Metadata_Kind, M => Final_Meta_T (P.Meta)));
 
       for Block of P.Block_List loop
          Tmp := Feed (Tmp, (K => Block_Kind, B => Block));

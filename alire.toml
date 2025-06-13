@@ -12,6 +12,7 @@ tags = []
 [build-switches]
 
 "*"."Ada_Version" = "Ada2022"
+"*"."Contracts" = "Yes"
 
 [[depends-on]]
 ahtml = "~0.1.0-dev"
