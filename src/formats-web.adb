@@ -311,6 +311,13 @@ package body Formats.Web is
          (AHTML.Strings.Denote ("content"), AHTML.Strings.Cook
             ("width=device-width, initial-scale=1.0"));
 
+      Charset : constant AHTML.Node.Node_Handle :=
+         D.Mk_Element ("meta");
+
+      Charset_Attr : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+         (AHTML.Strings.Denote ("charset"), AHTML.Strings.Cook
+            ("utf-8"));
+
       Title_Text : constant AHTML.Node.Node_Handle := D.Mk_Text
          (AHTML.Strings.Cook (Title));
 
@@ -322,11 +329,14 @@ package body Formats.Web is
          D.With_Attribute (Viewport, Viewport_Name);
          D.With_Attribute (Viewport, Viewport_Content);
 
+         D.With_Attribute (Charset, Charset_Attr);
+
          D.With_Child (R, H);
          D.With_Child (H, T);
          D.With_Child (T, Title_Text);
          D.With_Child (R, Style_Link);
          D.With_Child (R, Viewport);
+         D.With_Child (R, Charset);
 
          D.With_Child (R, B);
          D.With_Child (B, M);
