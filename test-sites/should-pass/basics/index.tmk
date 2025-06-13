@@ -1,0 +1,8 @@
+//title: Basic Correctness Tests
+//index: true
+
+This directory uses Passel's features in ways that are normal and expected.
+
+Passel should be able to correctly handle Unicode characters, e.g., ¶.
+
+Following this paragraph, Passel will insert a list of /item's.

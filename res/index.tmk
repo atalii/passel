@@ -1,6 +1,0 @@
-//title: Example Page
-//index: true
-
-Passel should be able to correctly handle Unicode characters: ¶.
-
-Following this paragraph, Passel will insert a list of /item's.
