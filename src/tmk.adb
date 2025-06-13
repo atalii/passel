@@ -96,12 +96,34 @@ package body TMK is
 
       Par : constant Block := (T => Paragraph, Text => Unbounded_Line);
 
+      --  First, we'll calculate the header level. If this isn't in range of
+      --  appropriate header levels (e.g., 0 in the case of no header), we'll
+      --  parse as a paragraph.
+
+      Observed_Header_Level : Natural := 0;
+      Header_Scan_Index : Positive := 1;
+
    begin
-      if SU.Head (Unbounded_Line, 2, '-') = "* " then
+      loop
+
+         exit when Header_Scan_Index >= SU.Length (Unbounded_Line);
+         exit when SU.Element (Unbounded_Line, Header_Scan_Index) /= '*';
+
+         Observed_Header_Level := @ + 1;
+         Header_Scan_Index := @ + 1;
+
+      end loop;
+
+      if Observed_Header_Level in Heading_Level then
+
          declare
-            Head : constant Block := (T => Heading, Heading =>
-               SU.To_Unbounded_String
-                  (SU.Slice (Unbounded_Line, 2, SU.Length (Unbounded_Line))));
+            Head : constant Block :=
+              (T => Heading,
+                Heading => SU.To_Unbounded_String
+                 (SU.Slice
+                   (Unbounded_Line,
+                    Header_Scan_Index, SU.Length (Unbounded_Line))),
+                Level => Heading_Level (Observed_Header_Level));
          begin
             P.Block_List.Append (Head);
          end;

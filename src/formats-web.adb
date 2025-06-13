@@ -9,6 +9,9 @@ use VSS.Text_Streams;
 with VSS.Strings.Conversions;
 use VSS.Strings.Conversions;
 
+with VSS.Strings.Formatters;
+with VSS.Strings.Formatters.Integers;
+
 with VSS.Transformers;
 with VSS.Transformers.Casing;
 
@@ -107,6 +110,8 @@ package body Formats.Web is
 
       Ret : Web := Self;
 
+      Basic_Formatting : VSS.Strings.Formatters.Format_Information;
+
       procedure New_Page
       is
 
@@ -158,7 +163,10 @@ package body Formats.Web is
 
                declare
                   H : constant AHTML.Node.Node_Handle :=
-                     Ret.Active.Doc.Mk_Element ("h1");
+                    Ret.Active.Doc.Mk_Element (AHTML.Strings.Denote (
+                      ("h" &
+                       VSS.Strings.Formatters.Integers.Image
+                         (F.B.Level).Format (Basic_Formatting))));
 
                   Cooked_Content : constant AHTML.Strings.Cooked :=
                      AHTML.Strings.Cook (To_Virtual_String (F.B.Heading));

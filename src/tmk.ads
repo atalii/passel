@@ -13,10 +13,14 @@ package TMK is
 
    type Block_Type is (Paragraph, Heading);
 
+   subtype Heading_Level is Natural range 1 .. 6;
+
    type Block (T : Block_Type := Paragraph) is record
       case T is
          when Paragraph => Text : SU.Unbounded_String;
-         when Heading => Heading : SU.Unbounded_String;
+         when Heading =>
+            Heading : SU.Unbounded_String;
+            Level : Heading_Level;
       end case;
    end record;
 
