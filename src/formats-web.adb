@@ -139,6 +139,8 @@ package body Formats.Web is
       procedure Add_Block
       is
 
+         use TMK;
+
          B : constant AHTML.Node.Node_Handle := Ret.Active.Handle;
 
       begin
@@ -152,8 +154,22 @@ package body Formats.Web is
 
                begin
                   for Phrase of F.B.Text loop
-                     Ret.Active.Doc.With_Child (P, Ret.Active.Doc.Mk_Text
-                       (AHTML.Strings.Cook (Phrase.Text)));
+                     case Phrase.Style is
+                        when Normal =>
+                           Ret.Active.Doc.With_Child
+                             (P, Ret.Active.Doc.Mk_Text
+                               (AHTML.Strings.Cook (Phrase.Text)));
+                        when Italic =>
+                           declare
+                              E : constant AHTML.Node.Node_Handle :=
+                                Ret.Active.Doc.Mk_Element ("em");
+                           begin
+                              Ret.Active.Doc.With_Child (P, E);
+                              Ret.Active.Doc.With_Child
+                                (E, Ret.Active.Doc.Mk_Text
+                                  (AHTML.Strings.Cook (Phrase.Text)));
+                           end;
+                     end case;
                   end loop;
 
                   Ret.Active.Doc.With_Child (B, P);

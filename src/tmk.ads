@@ -17,8 +17,11 @@ package TMK is
 
    subtype Heading_Level is Natural range 1 .. 6;
 
+   type Phrase_Style is (Normal, Italic);
+
    type Phrase is record
      Text : VSS.Strings.Virtual_String;
+     Style : Phrase_Style;
    end record;
 
    package Phrase_Vectors is new Ada.Containers.Vectors
@@ -79,9 +82,10 @@ private
    function Feed_Expecting_Block (P : in out Parser; Line : String)
       return Boolean;
 
-   function Feed_In_Par (P : in out Parser; Line : String)
-      return Boolean
-      with Pre => P.State = In_Par;
+   function Feed_In_Par
+     (P : in out Parser; Line : String; Should_Break : Boolean)
+     return Boolean
+     with Pre => P.State = In_Par;
 
    procedure Parse_Metadata (P : in out Parser; Line : String);
 

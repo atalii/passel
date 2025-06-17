@@ -2,11 +2,15 @@ with Ada.Characters.Latin_1;
 
 with Passel.Log;
 
+with VSS.Characters;
+
 with VSS.Strings;
 use  VSS.Strings;
 
 with VSS.Strings.Conversions;
 use  VSS.Strings.Conversions;
+
+with VSS.Strings.Cursors.Iterators.Characters;
 
 package body TMK is
    pragma Assertion_Policy
@@ -26,7 +30,7 @@ package body TMK is
             when Expecting_Block =>
                return P.Feed_Expecting_Block (Line);
             when In_Par =>
-               return P.Feed_In_Par (Line);
+               return P.Feed_In_Par (Line, False);
          end case;
       end Transition_State_Fallible;
 
@@ -94,11 +98,6 @@ package body TMK is
       Unbounded_Line : constant SU.Unbounded_String :=
          SU.To_Unbounded_String (Line);
 
-      Virtual_Line : constant Virtual_String := To_Virtual_String (Line);
-
-      Par : constant Block := (T => Paragraph, Text =>
-        Phrase_Vectors.To_Vector ((Text => Virtual_Line), 1));
-
       --  First, we'll calculate the header level. If this isn't in range of
       --  appropriate header levels (e.g., 0 in the case of no header), we'll
       --  parse as a paragraph.
@@ -133,35 +132,101 @@ package body TMK is
 
       elsif Unbounded_Line /= "" then
 
-         P.Block_List.Append (Par);
          P.State := In_Par;
+         return Feed_In_Par (P, Line, True);
 
       end if;
 
       return True;
    end Feed_Expecting_Block;
 
-   function Feed_In_Par (P : in out Parser; Line : String)
-      return Boolean
+   function Feed_In_Par
+     (P : in out Parser; Line : String; Should_Break : Boolean)
+     return Boolean
    is
 
-      Virtual_Line : constant Virtual_String := To_Virtual_String (Line);
+      use VSS.Characters;
+      use VSS.Strings.Cursors.Iterators.Characters;
 
-      procedure Add_Line (E : in out Block)
+      function Split_Phrases return Phrase_Vectors.Vector
       is
-         P : constant Phrase := (Text => Virtual_Line);
+
+         Result : Phrase_Vectors.Vector := Phrase_Vectors.Empty_Vector;
+         Virtual_Line : constant Virtual_String := To_Virtual_String (Line);
+
+         Cursor : Character_Iterator := Virtual_Line.Before_First_Character;
+         Last_Slash : Character_Iterator := Virtual_Line.At_First_Character;
+
+         In_Italics : Boolean := False;
+
+         New_Phrase : Phrase;
+
+         procedure Splice (Style : Phrase_Style) is
+         begin
+            New_Phrase :=
+              (Text => Virtual_Line.Slice (Last_Slash, Cursor),
+               Style => Style);
+
+            Result.Append (New_Phrase);
+         end Splice;
+
       begin
-         E.Text.Append (P);
+
+         while Cursor.Forward loop
+            if Cursor.Element = '/' then
+
+               --  Move the cursor after and then before the '/'. These `exit
+               --  when not`s will never trigger.
+               exit when not Cursor.Backward;
+               Splice (if In_Italics then Italic else Normal);
+               exit when not Cursor.Forward;
+
+               exit when not Cursor.Forward;
+               Last_Slash.Set_At (Cursor);
+
+               In_Italics := not In_Italics;
+            end if;
+         end loop;
+
+         if Last_Slash.First_Character_Index
+           /= Cursor.First_Character_Index
+           and then Cursor.Backward
+         then
+            if Last_Slash.First_Character_Index = 0 then
+               Last_Slash.Set_At (Virtual_Line.At_First_Character);
+            end if;
+
+            Splice (Normal);
+         end if;
+
+         return Result;
+
+      end Split_Phrases;
+
+      procedure Add_Line (B : in out Block)
+      is begin
+         B.Text.Append (Split_Phrases);
       end Add_Line;
 
    begin
       if Line = "" then
-         P.State := Expecting_Block;
-         return True;
-      end if;
 
-      P.Block_List.Update_Element
-         (P.Block_List.Last, Add_Line'Access);
+         P.State := Expecting_Block;
+
+      elsif Should_Break then
+
+         declare
+            New_Block : constant Block :=
+             (T => Paragraph, Text => Split_Phrases);
+         begin
+            P.Block_List.Append (New_Block);
+         end;
+
+      else
+
+         P.Block_List.Update_Element (P.Block_List.Last, Add_Line'Access);
+
+      end if;
 
       return True;
    end Feed_In_Par;
