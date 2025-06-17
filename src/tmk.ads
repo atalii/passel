@@ -3,6 +3,8 @@ with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Ada.Strings.Fixed;
 
+with VSS.Strings;
+
 package TMK is
 
    type Parser is tagged limited private;
@@ -15,9 +17,17 @@ package TMK is
 
    subtype Heading_Level is Natural range 1 .. 6;
 
+   type Phrase is record
+     Text : VSS.Strings.Virtual_String;
+   end record;
+
+   package Phrase_Vectors is new Ada.Containers.Vectors
+     (Index_Type => Natural,
+      Element_Type => Phrase);
+
    type Block (T : Block_Type := Paragraph) is record
       case T is
-         when Paragraph => Text : SU.Unbounded_String;
+         when Paragraph => Text : Phrase_Vectors.Vector;
          when Heading =>
             Heading : SU.Unbounded_String;
             Level : Heading_Level;
@@ -67,8 +77,7 @@ private
       with Pre => P.State = Header;
 
    function Feed_Expecting_Block (P : in out Parser; Line : String)
-      return Boolean
-      with Pre => P.State = Header;
+      return Boolean;
 
    function Feed_In_Par (P : in out Parser; Line : String)
       return Boolean

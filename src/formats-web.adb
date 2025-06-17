@@ -146,16 +146,16 @@ package body Formats.Web is
             when TMK.Paragraph =>
 
                declare
+
                   P : constant AHTML.Node.Node_Handle :=
                      Ret.Active.Doc.Mk_Element ("p");
 
-                  Cooked_Content : constant AHTML.Strings.Cooked :=
-                     AHTML.Strings.Cook (To_Virtual_String (F.B.Text));
-
-                  T : constant AHTML.Node.Node_Handle :=
-                     Ret.Active.Doc.Mk_Text (Cooked_Content);
                begin
-                  Ret.Active.Doc.With_Child (P, T);
+                  for Phrase of F.B.Text loop
+                     Ret.Active.Doc.With_Child (P, Ret.Active.Doc.Mk_Text
+                       (AHTML.Strings.Cook (Phrase.Text)));
+                  end loop;
+
                   Ret.Active.Doc.With_Child (B, P);
                end;
 

@@ -18,4 +18,4 @@ tags = []
 ahtml = "~0.1.0-dev"
 
 [[pins]]
-ahtml = { url='https://github.com/atalii/ahtml', commit='0512df3a01cfb2f1fa062f798f241f91c987c008' }
+ahtml = { url='https://github.com/atalii/ahtml', commit='f1fc4b465b576cbc048106c43e6e152a65bc08c6' }

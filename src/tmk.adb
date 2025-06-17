@@ -94,7 +94,10 @@ package body TMK is
       Unbounded_Line : constant SU.Unbounded_String :=
          SU.To_Unbounded_String (Line);
 
-      Par : constant Block := (T => Paragraph, Text => Unbounded_Line);
+      Virtual_Line : constant Virtual_String := To_Virtual_String (Line);
+
+      Par : constant Block := (T => Paragraph, Text =>
+        Phrase_Vectors.To_Vector ((Text => Virtual_Line), 1));
 
       --  First, we'll calculate the header level. If this isn't in range of
       --  appropriate header levels (e.g., 0 in the case of no header), we'll
@@ -141,14 +144,16 @@ package body TMK is
    function Feed_In_Par (P : in out Parser; Line : String)
       return Boolean
    is
-      Unbounded_Line : constant SU.Unbounded_String :=
-         SU.To_Unbounded_String (Line);
 
-      procedure Add_Line (E : in out Block) is
+      Virtual_Line : constant Virtual_String := To_Virtual_String (Line);
+
+      procedure Add_Line (E : in out Block)
+      is
+         P : constant Phrase := (Text => Virtual_Line);
       begin
-         SU.Append (E.Text, " ");
-         SU.Append (E.Text, Unbounded_Line);
+         E.Text.Append (P);
       end Add_Line;
+
    begin
       if Line = "" then
          P.State := Expecting_Block;
