@@ -30,16 +30,15 @@
             };
       });
 
-      devShells.default = define (
-        pkgs:
-        pkgs.mkShell {
+      devShells = define (pkgs: {
+        default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             alire
-            gnat14
-            gnat14Packages.gprbuild
+            gnat15
+            gnat15Packages.gprbuild
           ];
-        }
-      );
+        };
+      });
     }
     // {
       lib = {
