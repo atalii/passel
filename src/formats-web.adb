@@ -20,15 +20,9 @@ with Passel.Util;
 
 package body Formats.Web is
 
-   Styles : constant String :=
-      "body {" &
-      "    font-family: sans-serif;" &
-      "}" &
-      "main {" &
-      "   max-width: 8.5in;" &
-      "   margin-left: auto;" &
-      "   margin-right: auto;" &
-      "}";
+   pragma Extensions_Allowed (All_Extensions);
+
+   Styles : constant String with External_Initialization => "styles.css";
 
    procedure Write_Out (W : in out Web; Dir : Virtual_String)
    is
