@@ -28,12 +28,6 @@
               alire = alirenix.packages.x86_64-linux.alire;
               depsHash = "sha256-GFUrwFQTINHNd/wBRREMOwRr//XzBhACQrXyXeBl5lE=";
             };
-
-        test-site = pkgs.callPackage self.lib.buildSite {
-          src = ./res;
-          passel = self.packages.${pkgs.system}.default;
-          version = "0.1.0";
-        };
       });
 
       devShells.default = define (
