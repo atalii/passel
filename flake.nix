@@ -26,7 +26,7 @@
               version = "0.1.0";
               index = alirenix.packages.x86_64-linux.community-index;
               alire = alirenix.packages.x86_64-linux.alire;
-              depsHash = "sha256-GFUrwFQTINHNd/wBRREMOwRr//XzBhACQrXyXeBl5lE=";
+              depsHash = "sha256-PsZ6vRp0yZBWUnv7xcLyFfo8jCcEz8pTzTv6IR/YC+A=";
             };
       });
 

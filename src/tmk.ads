@@ -73,6 +73,8 @@ private
       Meta : Meta_T;
       Block_List : Blocks.Vector;
       State : Parser_States := Header;
+
+      In_Italics : Boolean := False;
    end record;
 
    function Feed_Header_Line (P : in out Parser; Line : String)

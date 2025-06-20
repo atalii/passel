@@ -157,8 +157,6 @@ package body TMK is
          Cursor : Character_Iterator := Virtual_Line.Before_First_Character;
          Last_Slash : Character_Iterator := Virtual_Line.At_First_Character;
 
-         In_Italics : Boolean := False;
-
          New_Phrase : Phrase;
 
          procedure Splice (Style : Phrase_Style) is
@@ -170,6 +168,11 @@ package body TMK is
             Result.Append (New_Phrase);
          end Splice;
 
+         Flag : Boolean;
+         --  We want to be able to move iterators without caring whether they
+         --  run off the end or start of the line.
+         pragma Unreferenced (Flag);
+
       begin
 
          while Cursor.Forward loop
@@ -177,14 +180,14 @@ package body TMK is
 
                --  Move the cursor after and then before the '/'. These `exit
                --  when not`s will never trigger.
-               exit when not Cursor.Backward;
-               Splice (if In_Italics then Italic else Normal);
-               exit when not Cursor.Forward;
+               Flag := Cursor.Backward;
+               Splice (if P.In_Italics then Italic else Normal);
+               Flag := Cursor.Forward;
 
-               exit when not Cursor.Forward;
+               Flag := Cursor.Forward;
                Last_Slash.Set_At (Cursor);
 
-               In_Italics := not In_Italics;
+               P.In_Italics := not P.In_Italics;
             end if;
          end loop;
 
@@ -196,7 +199,7 @@ package body TMK is
                Last_Slash.Set_At (Virtual_Line.At_First_Character);
             end if;
 
-            Splice (Normal);
+            Splice (if P.In_Italics then Italic else Normal);
          end if;
 
          return Result;

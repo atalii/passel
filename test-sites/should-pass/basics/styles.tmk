@@ -1,0 +1,10 @@
+//title: Inline Formatting
+
+TMK supports inline styles /like italics./
+
+Multiple /emphasized phrases/ can occur on /one source line./
+
+/Italics/ can begin a source line.
+
+They can also /extend over multiple source lines, despite the parser being
+line-based./ Arguably, I should've just used YACC.
