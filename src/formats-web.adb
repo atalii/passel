@@ -188,6 +188,26 @@ package body Formats.Web is
                   Ret.Active.Doc.With_Child (B, H);
                end;
 
+            when TMK.Link =>
+
+               declare
+                  A : constant AHTML.Node.Node_Handle
+                    := Ret.Active.Doc.Mk_Element (AHTML.Strings.Denote ("a"));
+
+                  L : constant AHTML.Node.Node_Handle
+                    := Ret.Active.Doc.Mk_Text
+                      (AHTML.Strings.Cook (F.B.Label));
+
+                  H : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+                    (AHTML.Strings.Denote ("href"),
+                     AHTML.Strings.Cook (F.B.Location));
+
+               begin
+                  Ret.Active.Doc.With_Child (B, A);
+                  Ret.Active.Doc.With_Child (A, L);
+                  Ret.Active.Doc.With_Attribute (A, H);
+               end;
+
          end case;
       end Add_Block;
 

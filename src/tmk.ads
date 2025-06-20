@@ -13,7 +13,7 @@ package TMK is
 
    package SU renames Ada.Strings.Unbounded;
 
-   type Block_Type is (Paragraph, Heading);
+   type Block_Type is (Paragraph, Heading, Link);
 
    subtype Heading_Level is Natural range 1 .. 6;
 
@@ -34,6 +34,9 @@ package TMK is
          when Heading =>
             Heading : SU.Unbounded_String;
             Level : Heading_Level;
+         when Link =>
+            Label : VSS.Strings.Virtual_String;
+            Location : VSS.Strings.Virtual_String;
       end case;
    end record;
 
@@ -83,6 +86,8 @@ private
 
    function Feed_Expecting_Block (P : in out Parser; Line : String)
       return Boolean;
+
+   function Feed_In_Link (P : in out Parser; Line : String) return Boolean;
 
    function Feed_In_Par
      (P : in out Parser; Line : String; Should_Break : Boolean)

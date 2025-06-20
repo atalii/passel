@@ -5,4 +5,6 @@ This directory uses Passel's features in ways that are normal and expected.
 
 Passel should be able to correctly handle Unicode characters, e.g., ¶.
 
+-> We also have links: https://example.org/
+
 Following this paragraph, Passel will insert a list of items.

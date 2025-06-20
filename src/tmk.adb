@@ -89,6 +89,38 @@ package body TMK is
       return True;
    end Feed_Header_Line;
 
+   function Feed_In_Link (P : in out Parser; Line : String) return Boolean
+   is
+      I : Positive := 3;
+      Label_Start : Positive;
+      Label_End : Positive;
+      Loc_Start : Positive;
+   begin
+      while Line (I) /= ' ' loop
+         I := @ + 1;
+      end loop;
+
+      Label_Start := I;
+
+      while Line (I) /= ':' loop
+         I := @ + 1;
+      end loop;
+
+      Label_End := I - 1;
+      Loc_Start := I + 1;
+
+      declare
+         B : constant Block :=
+           (T => Link,
+            Label => To_Virtual_String (Line (Label_Start .. Label_End)),
+            Location => To_Virtual_String (Line (Loc_Start .. Line'Last)));
+      begin
+         P.Block_List.Append (B);
+      end;
+
+      return True;
+   end Feed_In_Link;
+
    function Feed_Expecting_Block (P : in out Parser; Line : String)
       return Boolean
    is
@@ -129,6 +161,10 @@ package body TMK is
          begin
             P.Block_List.Append (Head);
          end;
+
+      elsif SU.Head (Unbounded_Line, 3) = "-> " then
+
+         return P.Feed_In_Link (Line);
 
       elsif Unbounded_Line /= "" then
 
