@@ -37,6 +37,7 @@
             alire
             gnat15
             gnat15Packages.gprbuild
+            unzip
           ];
         };
       });
