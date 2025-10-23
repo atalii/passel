@@ -1,5 +1,8 @@
 with Ada.Directories;
 
+with Ada.Strings.Unbounded;
+use Ada.Strings.Unbounded;
+
 with VSS.Text_Streams.File_Output;
 use VSS.Text_Streams.File_Output;
 
@@ -95,7 +98,7 @@ package body Formats.Web is
 
    function Empty return Web is
       (State => Init,
-      Index_Links => Empty_Virtual_String_Vector,
+      Index_Links => TOC.Empty_Vector,
       Index_Page => Scaffold_Page ("Index", True),
       Pages => Page_Vec.Empty);
 
@@ -226,7 +229,17 @@ package body Formats.Web is
    begin
       if Self.State = Building_Page and then not Self.Is_Index then
          Self.Pages.Append (Self.Active);
-         Append (Self.Index_Links, Unwrap (Self.Active.File_Name));
+
+         declare
+            --  Note: This type annotation is necessary to disambiguate calls
+            --  to Self.Index_Links.Append.
+            Link : constant Page_Item :=
+              (Name => To_Virtual_String (Self.Active.Metadata.Title),
+              Target => Unwrap (Self.Active.File_Name));
+         begin
+            Self.Index_Links.Append (Link);
+         end;
+
       elsif Self.State = Building_Page and then Self.Is_Index then
          Self.Index_Page := Self.Active;
       end if;
@@ -265,10 +278,10 @@ package body Formats.Web is
               := Self.Index_Page.Doc.Mk_Element ("a");
 
             T : constant AHTML.Node.Node_Handle
-              := Self.Index_Page.Doc.Mk_Text (Cook (Link));
+              := Self.Index_Page.Doc.Mk_Text (Cook (Link.Name));
 
             H : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
-               (Denote ("href"), Cook (Link));
+               (Denote ("href"), Cook (Link.Target));
          begin
             Self.Index_Page.Doc.With_Child (U, L);
             Self.Index_Page.Doc.With_Child (L, A);
@@ -371,7 +384,14 @@ package body Formats.Web is
          D.With_Child (R, B);
          D.With_Child (B, M);
 
-         return (File_Name => Make_File_Name, Doc => D, Handle => M);
+         return (
+            File_Name => Make_File_Name,
+            Doc => D,
+            Handle => M,
+            Metadata => (
+               Title => To_Unbounded_String (Passel.Util.To_String (Title)),
+               Author => To_Unbounded_String (""),
+               Index => Is_Index));
 
    end Scaffold_Page;
 

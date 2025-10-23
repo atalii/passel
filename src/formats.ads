@@ -3,6 +3,8 @@ with Ada.Containers.Vectors;
 with AHTML.Node;
 with AHTML.Strings;
 
+with TMK;
+
 package Formats is
 
    Target_Exists : exception;
@@ -13,6 +15,7 @@ package Formats is
       File_Name : AHTML.Strings.Cooked;
       Doc : AHTML.Node.Doc;
       Handle : AHTML.Node.Node_Handle;
+      Metadata : TMK.Meta_T;
    end record;
 
    package Page_Vec is new Ada.Containers.Vectors

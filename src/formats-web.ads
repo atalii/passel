@@ -1,16 +1,21 @@
 with TMK;
 
-with VSS.String_Vectors;
-use VSS.String_Vectors;
-
 with VSS.Strings;
 use VSS.Strings;
 
 package Formats.Web is
 
+   type Page_Item is record
+      Name : Virtual_String;
+      Target : Virtual_String;
+   end record;
+
+   package TOC is new Ada.Containers.Vectors
+      (Index_Type => Natural, Element_Type => Page_Item);
+
    type Web (State : State_Flag := Init) is record
       Pages : Page_Vec.Vector;
-      Index_Links : Virtual_String_Vector;
+      Index_Links : TOC.Vector;
       Index_Page : Page;
 
       case State is
