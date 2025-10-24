@@ -99,7 +99,10 @@ package body Formats.Web is
    function Empty return Web is
       (State => Init,
       Index_Links => TOC.Empty_Vector,
-      Index_Page => Scaffold_Page ("Index", True),
+      Index_Page => Scaffold_Page ((
+         Title => To_Unbounded_String ("Index"),
+         Author => To_Unbounded_String (""),
+         Index => True)),
       Pages => Page_Vec.Empty);
 
    function Feed (Self : Web; F : TMK.Renderer_Feed) return Web
@@ -112,10 +115,7 @@ package body Formats.Web is
       procedure New_Page
       is
 
-         Title : constant Virtual_String :=
-            To_Virtual_String (F.M.Title);
-
-         P : constant Page := Scaffold_Page (Title, F.M.Index);
+         P : constant Page := Scaffold_Page (F.M);
 
       begin
 
@@ -300,9 +300,12 @@ package body Formats.Web is
    -- Scaffold_Page --
    -------------------
 
-   function Scaffold_Page (Title : Virtual_String; Is_Index : Boolean := False)
+   function Scaffold_Page (Meta : TMK.Final_Meta_T)
       return Page
    is
+
+      Title : constant VSS.Strings.Virtual_String :=
+         To_Virtual_String (To_String (Meta.Title));
 
       function Make_File_Name return AHTML.Strings.Cooked
       is
@@ -314,7 +317,7 @@ package body Formats.Web is
          --   FIXME: This is a vulnerability if title contains ../.
 
       begin
-         if Is_Index then
+         if Meta.Index then
             return AHTML.Strings.Cook ("/index.html");
          else
             return AHTML.Strings.Cook ("/item/" & Slug & ".html");
@@ -388,10 +391,7 @@ package body Formats.Web is
             File_Name => Make_File_Name,
             Doc => D,
             Handle => M,
-            Metadata => (
-               Title => To_Unbounded_String (Passel.Util.To_String (Title)),
-               Author => To_Unbounded_String (""),
-               Index => Is_Index));
+            Metadata => TMK.Meta_T (Meta));
 
    end Scaffold_Page;
 

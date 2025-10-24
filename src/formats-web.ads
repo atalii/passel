@@ -36,7 +36,6 @@ private
 
    procedure Finalize_Page (Self : in out Web);
    procedure Fixup_Index (Self : in out Web);
-   function Scaffold_Page (Title : Virtual_String; Is_Index : Boolean := False)
-      return Page;
+   function Scaffold_Page (Meta : TMK.Final_Meta_T) return Page;
 
 end Formats.Web;
