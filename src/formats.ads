@@ -15,6 +15,7 @@ package Formats is
       File_Name : AHTML.Strings.Cooked;
       Doc : AHTML.Node.Doc;
       Handle : AHTML.Node.Node_Handle;
+      Body_Handle : AHTML.Node.Node_Handle;
       Metadata : TMK.Meta_T;
    end record;
 

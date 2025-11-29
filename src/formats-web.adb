@@ -102,6 +102,7 @@ package body Formats.Web is
       Index_Page => Scaffold_Page ((
          Title => To_Unbounded_String ("Index"),
          Author => To_Unbounded_String (""),
+         Footer => To_Unbounded_String (""),
          Index => True)),
       Pages => Page_Vec.Empty);
 
@@ -231,6 +232,22 @@ package body Formats.Web is
    is
       use AHTML.Strings;
    begin
+      if Self.State = Building_Page and then
+         Self.Active.Metadata.Footer /= ""
+      then
+         declare
+            F : constant AHTML.Node.Node_Handle
+              := Self.Active.Doc.Mk_Element ("footer");
+            T : constant AHTML.Node.Node_Handle
+              := Self.Active.Doc.Mk_Text (Cook
+                 (To_Virtual_String (To_String
+                    (Self.Active.Metadata.Footer))));
+         begin
+            Self.Active.Doc.With_Child (Self.Index_Page.Body_Handle, F);
+            Self.Active.Doc.With_Child (F, T);
+         end;
+      end if;
+
       if Self.State = Building_Page and then not Self.Is_Index then
          Self.Pages.Append (Self.Active);
 
@@ -271,6 +288,15 @@ package body Formats.Web is
 
    begin
 
+      Self :=
+         (State => Building_Page,
+         Pages => Self.Pages,
+         Index_Links => Self.Index_Links,
+         Index_Page => Self.Index_Page,
+         Active => Self.Index_Page,
+         Is_Index => True);
+
+      --  Add links to other pages.
       Self.Index_Page.Doc.With_Child (Self.Index_Page.Handle, U);
 
       for Link of Self.Index_Links loop
@@ -395,6 +421,7 @@ package body Formats.Web is
             File_Name => Make_File_Name,
             Doc => D,
             Handle => M,
+            Body_Handle => B,
             Metadata => TMK.Meta_T (Meta));
 
    end Scaffold_Page;

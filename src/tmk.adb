@@ -291,6 +291,8 @@ package body TMK is
             P.Meta.Title := Val_UB;
          elsif Key = "author" then
             P.Meta.Author := Val_UB;
+         elsif Key = "footer" then
+            P.Meta.Footer := Val_UB;
          elsif Key = "index" then
             if Val = "true" then
                P.Meta.Index := True;
