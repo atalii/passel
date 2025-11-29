@@ -194,6 +194,9 @@ package body Formats.Web is
             when TMK.Link =>
 
                declare
+                  P : constant AHTML.Node.Node_Handle
+                    := Ret.Active.Doc.Mk_Element (AHTML.Strings.Denote ("p"));
+
                   A : constant AHTML.Node.Node_Handle
                     := Ret.Active.Doc.Mk_Element (AHTML.Strings.Denote ("a"));
 
@@ -206,7 +209,8 @@ package body Formats.Web is
                      AHTML.Strings.Cook (F.B.Location));
 
                begin
-                  Ret.Active.Doc.With_Child (B, A);
+                  Ret.Active.Doc.With_Child (B, P);
+                  Ret.Active.Doc.With_Child (P, A);
                   Ret.Active.Doc.With_Child (A, L);
                   Ret.Active.Doc.With_Attribute (A, H);
                end;
