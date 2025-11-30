@@ -10,7 +10,7 @@ Don't use this yet. It doesn't exactly work, and the code is terrible.
 
 - [ ] Date and sort posts.
 - [ ] Generate RSS feeds.
-- [ ] Footers
+- [-] Footers
 - [ ] Copyright notices
 - [ ] Inline links
 - [ ] Images
