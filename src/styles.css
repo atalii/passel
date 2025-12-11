@@ -13,6 +13,7 @@ body {
 
 main, footer {
 	max-width: 8.5in;
+	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 }
