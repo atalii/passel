@@ -1,6 +1,6 @@
 {
   inputs.alirenix.url = "github:atalii/alirenix";
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
 
   outputs =
     {
@@ -26,7 +26,7 @@
               version = "0.1.0";
               index = alirenix.packages.x86_64-linux.community-index;
               alire = alirenix.packages.x86_64-linux.alire;
-              depsHash = "sha256-Vr3MYNC7j02YOO6/hVtapVLlO/VD4SNbxhPiIyE07WQ=";
+              depsHash = "sha256-kaKQ46tsiSWYZeGy/z+CW4iU0GYr2zyWMsf9k2pVEyE=";
               gnat = pkgs.gnat15;
             };
       });
