@@ -16,6 +16,7 @@ tags = []
 
 [[depends-on]]
 ahtml = "~0.1.0-dev"
+vss_extra = "26.2.0"
 
 [[pins]]
-ahtml = { url='https://github.com/atalii/ahtml', commit='f1fc4b465b576cbc048106c43e6e152a65bc08c6' }
+ahtml = { url='https://github.com/atalii/ahtml', commit='e7d97e72dc81ec1cfbe9b0de118fa4992da439d1' }

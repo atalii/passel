@@ -1,6 +1,6 @@
 {
   inputs.alirenix.url = "github:atalii/alirenix";
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs";
 
   outputs =
     {
