@@ -380,7 +380,6 @@ package body Formats.Web is
       is
 
          Slug : constant Virtual_String := Slugify (Title);
-         --   FIXME: This is a vulnerability if title contains ../.
 
       begin
          if Meta.Index then
