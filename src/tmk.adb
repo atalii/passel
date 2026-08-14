@@ -243,8 +243,32 @@ package body TMK is
       end Split_Phrases;
 
       procedure Add_Line (B : in out Block)
-      is begin
-         B.Text.Append (Split_Phrases);
+      is
+         Phrases : Phrase_Vectors.Vector := Split_Phrases;
+      begin
+         if B.Text.Is_Empty then
+            B.Text := Phrases;
+            return;
+         end if;
+
+         if Phrases.Is_Empty then
+            return;
+         end if;
+
+         declare
+            F_P : Phrase_Vectors.Cursor := Phrases.First;
+            Last_Old_Phrase : Phrase := B.Text (B.Text.Last);
+            First_New_Phrase : constant Phrase := Phrases (F_P);
+         begin
+            if Last_Old_Phrase.Style = First_New_Phrase.Style then
+               Last_Old_Phrase.Text.Append (" ");
+               Last_Old_Phrase.Text.Append (First_New_Phrase.Text);
+               B.Text.Replace_Element (B.Text.Last, Last_Old_Phrase);
+               Phrases.Delete (F_P);
+            end if;
+         end;
+
+         B.Text.Append (Phrases);
       end Add_Line;
 
    begin
