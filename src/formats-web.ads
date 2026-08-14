@@ -3,6 +3,9 @@ with TMK;
 with VSS.Strings;
 use VSS.Strings;
 
+with VSS.Characters;
+use VSS.Characters;
+
 package Formats.Web is
 
    type Page_Item is record
@@ -33,6 +36,10 @@ package Formats.Web is
    procedure Write_Out (W : in out Web; Dir : Virtual_String);
 
 private
+
+   function Replace
+      (X : Virtual_String; Y : Virtual_Character; Replacement : Virtual_String)
+      return Virtual_String;
 
    procedure Finalize_Page (Self : in out Web);
    procedure Fixup_Index (Self : in out Web);

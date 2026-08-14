@@ -12,6 +12,9 @@ use VSS.Text_Streams;
 with VSS.Strings.Conversions;
 use VSS.Strings.Conversions;
 
+with VSS.String_Vectors;
+use VSS.String_Vectors;
+
 with VSS.Strings.Formatters;
 with VSS.Strings.Formatters.Integers;
 
@@ -24,6 +27,24 @@ with Passel.Util;
 package body Formats.Web is
 
    pragma Extensions_Allowed (All_Extensions);
+
+   function Replace
+      (X : Virtual_String; Y : Virtual_Character; Replacement : Virtual_String)
+      return Virtual_String
+   is
+      Elements : constant Virtual_String_Vector := X.Split (Y);
+      Result : Virtual_String;
+   begin
+      for J in 1 .. Elements.Length loop
+         if J > 1 then
+            Result.Append (Replacement);
+         end if;
+
+         Result.Append (Elements.Element (J));
+      end loop;
+
+      return Result;
+   end Replace;
 
    Styles : constant String with External_Initialization => "styles.css";
 
@@ -337,13 +358,28 @@ package body Formats.Web is
       Title : constant VSS.Strings.Virtual_String :=
          To_Virtual_String (To_String (Meta.Title));
 
-      function Make_File_Name return AHTML.Strings.Cooked
+      function Slugify (X : Virtual_String) return Virtual_String
       is
 
          use VSS.Transformers;
          use VSS.Transformers.Casing;
 
-         Slug : constant Virtual_String := To_Lowercase.Transform (Title);
+         Lowercase : constant Virtual_String := To_Lowercase.Transform (X);
+
+         --  TODO: URL encoding would be better. Does that belong
+         --  upstream in VSS extras?
+         Y : constant Virtual_String := Replace (Lowercase, '.', "-");
+         Z : constant Virtual_String := Replace (Y, ' ', "-");
+         Result : constant Virtual_String := Replace (Z, '/', "-");
+
+      begin
+         return Result;
+      end Slugify;
+
+      function Make_File_Name return AHTML.Strings.Cooked
+      is
+
+         Slug : constant Virtual_String := Slugify (Title);
          --   FIXME: This is a vulnerability if title contains ../.
 
       begin
