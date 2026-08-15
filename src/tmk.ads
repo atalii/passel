@@ -43,6 +43,7 @@ package TMK is
    type Meta_T is record
       Title : SU.Unbounded_String;
       Author : SU.Unbounded_String;
+      Date : VSS.Strings.Virtual_String;
       Footer : SU.Unbounded_String;
       Index : Boolean := False;
    end record;

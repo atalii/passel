@@ -28,6 +28,9 @@ package body Formats.Web is
 
    pragma Extensions_Allowed (All_Extensions);
 
+   function "<" (Left, Right : Page_Item) return Boolean is
+     (Left.Date < Right.Date);
+
    function Replace
       (X : Virtual_String; Y : Virtual_Character; Replacement : Virtual_String)
       return Virtual_String
@@ -123,6 +126,7 @@ package body Formats.Web is
       Index_Page => Scaffold_Page ((
          Title => To_Unbounded_String ("Index"),
          Author => To_Unbounded_String (""),
+         Date => "",
          Footer => To_Unbounded_String (""),
          Index => True)),
       Pages => Page_Vec.Empty);
@@ -277,6 +281,7 @@ package body Formats.Web is
             --  to Self.Index_Links.Append.
             Link : constant Page_Item :=
               (Name => To_Virtual_String (Self.Active.Metadata.Title),
+              Date => Self.Active.Metadata.Date,
               Target => Unwrap (Self.Active.File_Name));
          begin
             Self.Index_Links.Append (Link);
@@ -307,6 +312,15 @@ package body Formats.Web is
       U : constant AHTML.Node.Node_Handle
         := Self.Index_Page.Doc.Mk_Element ("ul");
 
+      function Parenthesize (V : Virtual_String) return Virtual_String
+      is
+         Copy : Virtual_String := V;
+      begin
+         Copy.Prepend ("(");
+         Copy.Append (")");
+         return Copy;
+      end Parenthesize;
+
    begin
 
       Self :=
@@ -320,7 +334,9 @@ package body Formats.Web is
       --  Add links to other pages.
       Self.Index_Page.Doc.With_Child (Self.Index_Page.Handle, U);
 
-      for Link of Self.Index_Links loop
+      TOC_Sorting.Sort (Self.Index_Links);
+
+      for Link of reverse Self.Index_Links loop
          declare
             L : constant AHTML.Node.Node_Handle
               := Self.Index_Page.Doc.Mk_Element ("li");
@@ -331,14 +347,29 @@ package body Formats.Web is
             T : constant AHTML.Node.Node_Handle
               := Self.Index_Page.Doc.Mk_Text (Cook (Link.Name));
 
+            D_Span : constant AHTML.Node.Node_Handle
+              := Self.Index_Page.Doc.Mk_Element ("span");
+
+            D_Text : constant AHTML.Node.Node_Handle
+              := Self.Index_Page.Doc.Mk_Text (Cook (Parenthesize (Link.Date)));
+
             H : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
                (Denote ("href"), Cook (Link.Target));
+
+            C : constant AHTML.Node.Attr := AHTML.Node.Mk_Attr
+               (Denote ("class"), Cook ("date"));
          begin
             Self.Index_Page.Doc.With_Child (U, L);
             Self.Index_Page.Doc.With_Child (L, A);
             Self.Index_Page.Doc.With_Child (A, T);
 
+            if Link.Date /= "" then
+               Self.Index_Page.Doc.With_Child (A, D_Span);
+               Self.Index_Page.Doc.With_Child (D_Span, D_Text);
+            end if;
+
             Self.Index_Page.Doc.With_Attribute (A, H);
+            Self.Index_Page.Doc.With_Attribute (D_Span, C);
          end;
       end loop;
 

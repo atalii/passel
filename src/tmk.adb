@@ -310,11 +310,15 @@ package body TMK is
       is
          Val_UB : constant SU.Unbounded_String :=
          SU.To_Unbounded_String (Val);
+
+         Val_VS : constant Virtual_String := To_Virtual_String (Val);
       begin
          if Key = "title" then
             P.Meta.Title := Val_UB;
          elsif Key = "author" then
             P.Meta.Author := Val_UB;
+         elsif Key = "date" then
+            P.Meta.Date := Val_VS;
          elsif Key = "footer" then
             P.Meta.Footer := Val_UB;
          elsif Key = "index" then

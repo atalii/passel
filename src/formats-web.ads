@@ -10,6 +10,7 @@ package Formats.Web is
 
    type Page_Item is record
       Name : Virtual_String;
+      Date : Virtual_String;
       Target : Virtual_String;
    end record;
 
@@ -36,6 +37,10 @@ package Formats.Web is
    procedure Write_Out (W : in out Web; Dir : Virtual_String);
 
 private
+
+   function "<" (Left, Right : Page_Item) return Boolean;
+
+   package TOC_Sorting is new TOC.Generic_Sorting;
 
    function Replace
       (X : Virtual_String; Y : Virtual_Character; Replacement : Virtual_String)
