@@ -28,5 +28,5 @@ footer {
 }
 
 span.date {
-    margin-left: 2em;
+    float: right;
 }
