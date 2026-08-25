@@ -3,15 +3,16 @@
     "alire-community-index": {
       "flake": false,
       "locked": {
-        "lastModified": 1749722259,
-        "narHash": "sha256-UW492D5b5c0LYP7m2uxYKtkHIrqDCdnB5seo6ZVW8BU=",
+        "lastModified": 1787133257,
+        "narHash": "sha256-r6bycfvCrIqTay5Fs1C3yfzW/xiZOf2Oav5UEhYI+lM=",
         "owner": "alire-project",
         "repo": "alire-index",
-        "rev": "c8f57b57d7d2833c1e499a35f060faf7f44e3530",
+        "rev": "cd12c6aa35b7d6483841517305d57ba167ec78d0",
         "type": "github"
       },
       "original": {
         "owner": "alire-project",
+        "ref": "stable-1.4.0",
         "repo": "alire-index",
         "type": "github"
       }
@@ -22,11 +23,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1750543217,
-        "narHash": "sha256-WSbTU3W1/J25x1fwZb0ad26wqJm+0T93woml3CrKlN0=",
+        "lastModified": 1787352336,
+        "narHash": "sha256-3QbFQxhtLatFtFlJAa4hEZh9IeVh8VWU14XwPaliqc4=",
         "owner": "atalii",
         "repo": "alirenix",
-        "rev": "40a588610c171b76ad0db028b339f6edd89a3ca3",
+        "rev": "bd6f1493a892e18fee01eaeb6a4ce735b847a243",
         "type": "github"
       },
       "original": {
@@ -37,27 +38,26 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1750357780,
-        "narHash": "sha256-vQs+gk0RkSJdwtfed94L4YnwMOygAKzUhb9IPGVI00w=",
+        "lastModified": 1787251534,
+        "narHash": "sha256-XUKGZNAllCSS9W2kJ3mkY0PEGDanvdcJqUdYfLG2Bao=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b530547768e52213fd7a2c8c6d46c682945f390b",
+        "rev": "a641c6cb8f6e4bc324f76809c78e290e2344eefe",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "release-25.05",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1786544069,
-        "narHash": "sha256-EmN07lvpY5so7jG8jcAfBqafoi0pJYjW589YezV6Nyc=",
+        "lastModified": 1787682087,
+        "narHash": "sha256-cTyNMSl9Zs3BkgXLHzzba+nuqPg2C6F2f5jZmaNacvA=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "f69eba8b00e0aa62f85a54d9dda56b46b8426ec3",
+        "rev": "18223d959d5009c5d5b2f8a4a066a0ac4e6df780",
         "type": "github"
       },
       "original": {
